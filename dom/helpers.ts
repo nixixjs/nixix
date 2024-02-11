@@ -107,11 +107,29 @@ const bindDirectiveMap = {
   value: (value: Signal, element: HTMLInputElement | HTMLSelectElement) => {
     if (!isReactive(value))
       raise(`The bind:value directive's value must be a signal.`);
-    effect(() => {
+    function bindValueEff() {
       element.value = value.value as any;
-    });
+    }
+    effect(bindValueEff);
     element.addEventListener("input", ({ currentTarget }) => {
-      value.value = (currentTarget as any)?.value;
+      value.value = (currentTarget as typeof element).value;
+    });
+    element.addEventListener("remove:node", () => value.removeEffect(bindValueEff), {
+      once: true
+    });
+  },
+  open: (value: Signal, element: HTMLDetailsElement) => {
+    if (!isReactive(value))
+      raise(`The bind:value directive's value must be a signal.`);
+    function bindOpenEff() {
+      element.open = value.value as any;
+    }
+    effect(bindOpenEff);
+    element.addEventListener("toggle", ({ currentTarget }) => {
+      value.value = (currentTarget as typeof element).open;
+    });
+    element.addEventListener("remove:node", () => value.removeEffect(bindOpenEff), {
+      once: true
     });
   },
 };

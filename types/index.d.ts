@@ -13,6 +13,8 @@ type Booleanish = boolean | "true" | "false";
 export = Nixix;
 export as namespace Nixix;
 
+Details
+
 declare namespace Nixix {
   /**
    * @deprecated fragment - esbuild provides support for 'fragment' string
@@ -640,6 +642,7 @@ declare namespace Nixix {
   }
 
   interface DetailsHTMLAttributes<T> extends HTMLAttributes<T> {
+    "bind:open"?: Signal<boolean>;
     open?: boolean | undefined;
     "on:toggle"?: NativeEvents.NixixEventHandler<T>;
   }
