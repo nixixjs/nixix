@@ -975,7 +975,8 @@ declare namespace Nixix {
 
   interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
     autocomplete?: string;
-    cols?: number;
+    "bind:value": Signal<string>;
+    cols?: number | string;
     dirname?: string;
     disabled?: boolean;
     form?: string;
@@ -985,7 +986,7 @@ declare namespace Nixix {
     placeholder?: string;
     readonly?: boolean;
     required?: boolean;
-    rows?: number;
+    rows?: number | string;
     value?: string | string[] | number;
     wrap?: string;
   }

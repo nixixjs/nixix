@@ -25,7 +25,7 @@ export class Signal {
 
   set value(newVal: Primitive) {
     this._value = newVal;
-    this.$$__deps?.forEach(fn => fn?.())
+    queueMicrotask(() => (this.$$__deps?.forEach(fn => fn?.())))
   }
 
   public removeEffect(fn: CallableFunction) {
