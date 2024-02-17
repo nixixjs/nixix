@@ -60,7 +60,8 @@ export function fillInChildren(
         const text = addText(element);
         // @ts-expect-error
         function textEff() {
-          text.textContent = nonNull(signal.value, "");
+          const value = signal.value;
+          queueMicrotask(() => (text.textContent = nonNull(value, "")))
         }
         text.addEventListener(
           "remove:node",
@@ -104,16 +105,45 @@ const bindDirectiveMap = {
       return;
     }
   },
-  value: (value: Signal, element: HTMLInputElement | HTMLSelectElement) => {
+  value: (value: Signal, element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
     if (!isReactive(value))
       raise(`The bind:value directive's value must be a signal.`);
-    effect(() => {
+    if (!(['TEXTAREA', 'INPUT', 'SELECT'].includes(element.tagName)))
+      raise(`The bind:value directive cannot be used on <${element.tagName.toLowerCase()}> elements.`)
+    function bindValueEff() {
       element.value = value.value as any;
-    });
+    }
+    effect(bindValueEff);
     element.addEventListener("input", ({ currentTarget }) => {
-      value.value = (currentTarget as any)?.value;
+      value.value = (currentTarget as typeof element).value;
+    });
+    element.addEventListener("remove:node", () => value.removeEffect(bindValueEff), {
+      once: true
     });
   },
+  open: (value: Signal, element: HTMLDetailsElement) => {
+    if (!isReactive(value))
+      raise(`The bind:open directive's value must be a signal.`);
+    if (!(['DETAILS'].includes(element.tagName)))
+      raise(`The bind:open directive cannot be used on <${element.tagName.toLowerCase()}> elements.`)
+    function bindOpenEff() {
+      element.open = value.value as any;
+    }
+    effect(bindOpenEff);
+    element.addEventListener("toggle", ({ currentTarget }) => {
+      value.value = (currentTarget as typeof element).open;
+    });
+    element.addEventListener("remove:node", () => value.removeEffect(bindOpenEff), {
+      once: true
+    });
+  },
+  styles: (value: string, element: HTMLStyleElement) => {
+    if (isReactive(value))
+      raise(`The bind:styles directive's value must be a string.`);
+    if (!(['style'].includes(element.tagName)))
+      raise(`The bind:styles directive cannot be used on <${element.tagName.toLowerCase()}> elements.`)
+    element.textContent = value
+  }
 };
 
 export const directiveMap = {

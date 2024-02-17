@@ -6,12 +6,14 @@
 import * as CSS from "csstype";
 import { AriaRole } from "./aria";
 import * as NativeEvents from "./eventhandlers";
-import { MutableRefObject, Signal } from "../primitives/types";
+import { MutableRefObject as $MutableRefObject, RefObject as $RefObject, Signal } from "../primitives/types";
 
 type Booleanish = boolean | "true" | "false";
 
 export = Nixix;
 export as namespace Nixix;
+
+Details
 
 declare namespace Nixix {
   /**
@@ -43,11 +45,15 @@ declare namespace Nixix {
 
   type NixixNode = JSX.ElementType | Iterable<JSX.ElementType>;
 
+  type RefObject<T> = $RefObject<T>;
+
+  type MutableRefObject<T> = $MutableRefObject<T>;
+
   type ExoticComponent<P> = (props: P) => someView;
 
   type RouteExoticComponent<T> = T;
 
-  type RefFunction<T> = (({current}: {current: T}) => void)
+  type RefFunction<T> = (({current}: RefObject<T>) => void)
 
   interface CSSProperties extends CSS.Properties<string, number> {}
 
@@ -640,6 +646,7 @@ declare namespace Nixix {
   }
 
   interface DetailsHTMLAttributes<T> extends HTMLAttributes<T> {
+    "bind:open"?: Signal<boolean>;
     open?: boolean | undefined;
     "on:toggle"?: NativeEvents.NixixEventHandler<T>;
   }
@@ -952,10 +959,11 @@ declare namespace Nixix {
   }
 
   interface StyleHTMLAttributes<T> extends HTMLAttributes<T> {
+    "bind:styles": string
     media?: string;
     nonce?: string;
     scoped?: boolean;
-    type?: string;
+    type?: 'text/css';
   }
 
   interface TableHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -972,7 +980,8 @@ declare namespace Nixix {
 
   interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
     autocomplete?: string;
-    cols?: number;
+    "bind:value": Signal<string>;
+    cols?: number | string;
     dirname?: string;
     disabled?: boolean;
     form?: string;
@@ -982,7 +991,7 @@ declare namespace Nixix {
     placeholder?: string;
     readonly?: boolean;
     required?: boolean;
-    rows?: number;
+    rows?: number | string;
     value?: string | string[] | number;
     wrap?: string;
   }

@@ -23,9 +23,12 @@ export type MemoSignal<S> = Signal<S>;
 
 export type MemoStore<O> = Store<O>;
 
+export interface RefObject<T> {
+  readonly current: T;
+}
+
 export interface MutableRefObject<T> {
   current: T;
-  refId?: number;
   nextElementSibling: Element;
   prevElementSibling: Element;
   parent: HTMLElement;
@@ -84,11 +87,9 @@ type Deps = (Signal<Primitive> | Store<NonPrimitive>)[];
  */
 export function memo<S extends Primitive>(
   fn: () => S,
-  deps: Deps
 ): MemoSignal<S>;
 export function memo<S extends NonPrimitive>(
   fn: () => S,
-  deps: Deps
 ): MemoStore<S>;
 
 /**

@@ -156,6 +156,8 @@ export const PROP_ALIASES: {
   },
   value: {
     $: 'value',
-    INPUT: 1,
   },
+  textContent: {
+    $: 'textContent',
+  }
 } as const;
