@@ -121,7 +121,7 @@ function setProps(props: Proptype | null, element: NixixElementType) {
           return warn(
             `The ${k} directive value cannot be null or undefined. Skipping directive parsing`
           );
-        Nixix.handleDirectives('bind:', k.slice(5), v, element);
+        Nixix.handleDirectives('bind:', k.slice(5) as any, v, element);
       } else {
         setAttribute(element, k, v as ValueType);
       }

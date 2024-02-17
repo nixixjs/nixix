@@ -6,7 +6,7 @@
 import * as CSS from "csstype";
 import { AriaRole } from "./aria";
 import * as NativeEvents from "./eventhandlers";
-import { MutableRefObject, Signal } from "../primitives/types";
+import { MutableRefObject as $MutableRefObject, RefObject as $RefObject, Signal } from "../primitives/types";
 
 type Booleanish = boolean | "true" | "false";
 
@@ -45,11 +45,15 @@ declare namespace Nixix {
 
   type NixixNode = JSX.ElementType | Iterable<JSX.ElementType>;
 
+  type RefObject<T> = $RefObject<T>;
+
+  type MutableRefObject<T> = $MutableRefObject<T>;
+
   type ExoticComponent<P> = (props: P) => someView;
 
   type RouteExoticComponent<T> = T;
 
-  type RefFunction<T> = (({current}: {current: T}) => void)
+  type RefFunction<T> = (({current}: RefObject<T>) => void)
 
   interface CSSProperties extends CSS.Properties<string, number> {}
 
@@ -955,10 +959,11 @@ declare namespace Nixix {
   }
 
   interface StyleHTMLAttributes<T> extends HTMLAttributes<T> {
+    "bind:styles": string
     media?: string;
     nonce?: string;
     scoped?: boolean;
-    type?: string;
+    type?: 'text/css';
   }
 
   interface TableHTMLAttributes<T> extends HTMLAttributes<T> {
