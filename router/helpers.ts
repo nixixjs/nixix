@@ -42,13 +42,7 @@ export function isNull(val: any) {
 }
 
 export function getLink(link: string | Store | Signal): string {
-  switch (true) {
-    // @ts-expect-error
-    case link.$$__reactive:
-      return getSignalValue(link as Signal) || '' as any;
-    default:
-      return link as any;
-  }
+  return getSignalValue(link as any) || '' 
 }
 
 type ForEachParams<T> = Parameters<Array<T>["forEach"]>;

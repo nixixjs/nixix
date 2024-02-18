@@ -2,6 +2,8 @@ export const REACTIVE = Symbol.for('reactive')
 
 export const DEPS = Symbol.for('deps')
 
+export const TOPRIMITIVE = Symbol.toPrimitive;
+
 export function raise(message: string) {
   throw `${message}`;
 }

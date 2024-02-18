@@ -1,16 +1,16 @@
+import { DEPS, REACTIVE, TOPRIMITIVE } from "../shared";
 import { EFFECT_STACK } from "./shared";
 import { type Primitive } from "./types";
 
 export class Signal {
-  $$__reactive = true;
-  $$__deps = new Set<CallableFunction>()
+  [REACTIVE] = true;
+  
+  [DEPS] = new Set<CallableFunction>();
 
-  constructor(private _value: Primitive) {
-    const symbol = Symbol.toPrimitive
-    // @ts-expect-error
-    this[symbol] = function toPrimitive() {
-      return this.value;
-    }
+  constructor(private _value: Primitive) {}
+
+  [TOPRIMITIVE]() {
+    return this.value;
   }
 
   public toJSON() {
@@ -19,18 +19,18 @@ export class Signal {
 
   get value() {
     const RUNNING = EFFECT_STACK[EFFECT_STACK.length - 1];
-    if (RUNNING) this.$$__deps?.add(RUNNING);
+    if (RUNNING) this[DEPS]?.add(RUNNING);
     return this._value
   }
 
   set value(newVal: Primitive) {
     this._value = newVal;
-    this.$$__deps?.forEach(fn => fn?.())
+    this[DEPS]?.forEach(fn => fn?.())
   }
 
   public removeEffect(fn: CallableFunction) {
-    if (this.$$__deps?.has(fn)) {
-      this.$$__deps?.delete(fn) 
+    if (this[DEPS]?.has(fn)) {
+      this[DEPS]?.delete(fn) 
       return true;
     } else return false;
   }

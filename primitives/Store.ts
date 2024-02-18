@@ -2,17 +2,15 @@ import { entries, forEach, isPrimitive } from "./helpers";
 import { signal } from "../primitives";
 import { EmptyObject } from "../types";
 import { nixixStore } from '../dom/index'
+import { DEPS, REACTIVE } from "../shared";
 
 type StoreProps<T extends object | any[]> = {
   value?: T;
-  $$__deps?: Set<CallableFunction>;
 };
 
 type StoreProxyHandler<T extends object> = ProxyHandler<T> & {
   signalMap: Map<string | symbol, ReturnType<typeof signal>>;
 };
-
-const skippedPropNames = ["$$__reactive", "$$__deps"] as const;
 
 const arrayPropNames: (keyof Array<any>)[] = [ 'length' ]
 
@@ -25,13 +23,13 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
   const proxy = new Proxy<EmptyObject>(obj, {
     signalMap: new Map(),
     get(target, p) {
-      if (!(p in target) && !nixixStore.reactiveScope) return null; 
+      if (!nixixStore.reactiveScope) {
+        if (!(p in target)) return null;
+        else return target[p]
+      }
       const val = target[p];
       let returnedValue: any = null;
-      const skipProps = skippedPropNames.includes(
-        p as (typeof skippedPropNames)[number]
-      );
-      if (!isPrimitive(val) || typeof p === "symbol" || skipProps || isArrayPropName(target, p))
+      if (!isPrimitive(val) || typeof p === "symbol" || isArrayPropName(target, p))
         returnedValue = val;
       else {
         let signalMap = this.signalMap;
@@ -45,10 +43,15 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
       return returnedValue;
     },
     set(target, p, newValue) {
-      // set the value and then set the signal, if there is one;
       target[p] = newValue;
-      this.signalMap.get(p)?.[1]?.(newValue);
+      const [, setSignal] = this.signalMap.get(p) || [] 
+      setSignal?.(newValue)
       return true;
+    },
+    deleteProperty(target, p) {
+      const [, setSignal] = this.signalMap.get(p) || [] 
+      setSignal?.(null)
+      return true
     },
   } as StoreProxyHandler<EmptyObject>);
 
@@ -57,11 +60,10 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
 
 export class Store {
   constructor({ value }: StoreProps<object | any[]>) {
-    const $$__deps = new Set<CallableFunction>()
     // @ts-expect-error
     return Array.isArray(value)
-      ? new Store_Array({ value, $$__deps })
-      : new Store_Object({ value, $$__deps });
+      ? new Store_Array({ value })
+      : new Store_Object({ value });
   }
 }
 
@@ -78,8 +80,8 @@ class Store_Object {
       }
     });
     const proxyvalue = createStoreProxy<Store>(value!);
-    proxyvalue.$$__deps = new Set();
-    proxyvalue.$$__reactive = true;
+    proxyvalue[DEPS] = new Set();
+    proxyvalue[REACTIVE] = true;
     return proxyvalue;
   }
 }
@@ -96,19 +98,13 @@ class Store_Array {
         }
       });
       const proxyvalue = createStoreProxy<Store>(value!);
-      proxyvalue.$$__deps = new Set();
-      proxyvalue.$$__reactive = true;
+      proxyvalue[DEPS] = new Set();
+      proxyvalue[REACTIVE] = true;
     return proxyvalue;
   }
 }
 
 export interface Store {
-  $$__deps: Set<CallableFunction>;
-  $$__reactive: true;
-  [index: string | number]: any;
+  [REACTIVE]: true;
+  [DEPS]: Set<CallableFunction>;
 }
-
-// const value = {}
-// value.name // Signal { value: null, $$__reactive: true, $$__deps: [], toJSON: [Function: toJSON] }
-// setValue({ name: 'John' })
-// value.name // Signal { value: 'John', $$__reactive: true, $$__deps: [], toJSON: [Function: toJSON] }
