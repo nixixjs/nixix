@@ -55,6 +55,8 @@ declare namespace Nixix {
 
   type RefFunction<T> = (({current}: RefObject<T>) => void)
 
+  type EventModifiers = '-preventDefault' | '-stopPropagation' | '-self';
+
   interface CSSProperties extends CSS.Properties<string, number> {}
 
   interface EventAttributes<T> {
@@ -254,6 +256,10 @@ declare namespace Nixix {
     "on:transitionendcapture"?: NativeEvents.TransitionEventHandler<T>;
   }
 
+  type EventAttributesWithModifiers<T> = {
+    [index in keyof EventAttributes<T> as `${index}${EventModifiers}`]: EventAttributes<T>[index] 
+  } & EventAttributes<T>
+
   interface BindDirectives<T> {
     "bind:ref"?: MutableRefObject<T | null> | RefFunction<T>;
   }
@@ -262,7 +268,7 @@ declare namespace Nixix {
     key?: number;
   }
 
-  interface DOMAttributes<T> extends EventAttributes<T> {
+  interface DOMAttributes<T> extends EventAttributesWithModifiers<T> {
     children?: NixixNode;
     innerHTML?: string;
   }

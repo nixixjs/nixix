@@ -148,15 +148,11 @@ const bindDirectiveMap = {
 
 export const directiveMap = {
   "bind:": bindDirectiveMap,
-  "animate:": {
-    in: (value: object, element: NixixElementType) => undefined,
-  },
 } as const;
 
 type DirectiveMap = typeof directiveMap;
 
 type KeyOfAllDirectives =
-  | keyof DirectiveMap["animate:"]
   | keyof DirectiveMap["bind:"];
 
 export function handleDirectives_(

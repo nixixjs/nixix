@@ -1,3 +1,7 @@
+export const REACTIVE = Symbol.for('reactive')
+
+export const DEPS = Symbol.for('deps')
+
 export function raise(message: string) {
   throw `${message}`;
 }
