@@ -1,5 +1,5 @@
 import { Signal } from "../primitives/classes";
-import { entries } from "../primitives/helpers";
+import { entries, isReactive } from "../primitives/helpers";
 import { effect } from "../primitives/index";
 import { isFunction, isNull, nonNull, raise, warn } from "../shared";
 import Component from "./Component";
@@ -45,7 +45,7 @@ function setAttribute(
     return warn(
       `The ${attrName} prop cannot be null or undefined. Skipping attribute parsing.`
     );
-  if ((attrValue as Signal).$$__reactive) {
+  if (isReactive(attrValue)) {
     const signal = attrValue as Signal;
     // @ts-expect-error
     function propEff() {
@@ -76,7 +76,7 @@ function setStyle(element: NixixElementType, styleValue: StyleValueType) {
         `The ${styleKey} CSS property cannot be null or undefined. Skipping CSS property parsing.`
       );
 
-    if ((value as Signal).$$__reactive) {
+    if (isReactive(value)) {
       const signal = value as Signal;
       // @ts-expect-error
       function styleEff() {
@@ -121,7 +121,7 @@ function setProps(props: Proptype | null, element: NixixElementType) {
           return warn(
             `The ${k} directive value cannot be null or undefined. Skipping directive parsing`
           );
-        Nixix.handleDirectives('bind:', k.slice(5) as any, v, element);
+        Nixix.handleDirectives("bind:", k.slice(5) as any, v, element);
       } else {
         setAttribute(element, k, v as ValueType);
       }

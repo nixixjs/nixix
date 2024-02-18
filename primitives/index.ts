@@ -1,6 +1,6 @@
 import { getSignalValue } from "../dom/helpers";
 import { nixixStore } from "../dom/index";
-import { raise } from "../shared";
+import { DEPS, raise, isFunction } from "../shared";
 import { Signal, Store } from "./classes";
 import {
   cloneObject,
@@ -16,7 +16,6 @@ import type {
   SetSignalDispatcher,
   Signal as Signal2,
 } from "./types";
-import { isFunction } from "../shared";
 
 function callRef<R extends Element | HTMLElement>(ref: R): MutableRefObject {
   return {
@@ -72,19 +71,13 @@ function callStore<S extends NonPrimitive>(
   let objCopy = cloneObject(value);
   const initValue = new Store({ value });
   const setter = (newValue: (prev?: any) => any) => {
-    let reactiveProps: Record<string, any> = splitProps(
-      initValue,
-      "$$__deps",
-      "$$__reactive"
-    );
     let newValuePassed = isFunction(newValue) ? newValue(objCopy) : newValue;
     switch (true) {
       case config?.equals:
       default:
         closeReactiveProxyScope(() => patchObj(initValue, newValuePassed));
         patchObj(objCopy, newValuePassed);
-        Object.assign(initValue, reactiveProps);
-        initValue?.$$__deps?.forEach?.((eff) => eff());
+        initValue?.[DEPS]?.forEach?.((eff) => eff());
     }
   };
 
@@ -118,7 +111,7 @@ function concat<T extends Signal>(
       const expression = expressions[i - 1];
       let returnedVal: Primitive = "";
       if (expression) {
-        if (expression.$$__reactive) returnedVal = getSignalValue(expression);
+        if (expression[DEPS]) returnedVal = getSignalValue(expression);
         else if (isPrimitive(expression)) returnedVal = expression as any;
       }
       return p + returnedVal + v;
@@ -133,13 +126,13 @@ function subscribeDeps(
   if (furtherDependents)
     resolveImmediate(() => {
       forEach(furtherDependents, (dep) => {
-        dep?.$$__reactive && addDep(callbackFn, dep as Signal);
+        dep?.[DEPS] && addDep(callbackFn, dep as Signal);
       });
     });
 }
 
 function addDep(cb: CallableFunction, dep: Signal | Store) {
-  dep.$$__deps?.add(cb)
+  dep?.[DEPS]?.add(cb)
 }
 
 function resolveImmediate(fn: CallableFunction) {
@@ -181,25 +174,9 @@ function renderEffect(
   subscribeDeps(callbackFn, furtherDependents);
 }
 
-function dispatchSignalRemoval(signal: Store | Signal) {
-  // @ts-expect-error
-  delete signal.$$__deps;
-  // @ts-expect-error
-  delete signal.$$__reactive;
-}
-
-function removeSignal<T extends Store | Signal = Store | Signal>(
-  signals: T | Array<T>
-) {
-  Array.isArray(signals)
-    ? forEach(signals, (signal) => {
-        dispatchSignalRemoval(signal);
-      })
-    : dispatchSignalRemoval(signals);
-}
-
 // This is only for simplicity
 const signal = callSignal;
+
 const store = callStore;
 
 export {
@@ -212,7 +189,6 @@ export {
   callStore,
   getSignalValue,
   getValueType,
-  removeSignal,
   renderEffect,
   splitProps,
   memo,

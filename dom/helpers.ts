@@ -39,7 +39,7 @@ export function flatten(arr: Array<any>) {
 }
 
 export function getSignalValue(signal: Signal) {
-  if (signal.$$__reactive) {
+  if (isReactive(signal)) {
     const value = signal.value;
     return value;
   } else return signal as any;
@@ -55,13 +55,13 @@ export function fillInChildren(
   return (child: ChildrenType[number]) => {
     if (typeof child === "object") {
       // signal check
-      if ((child as Signal)?.$$__reactive) {
+      if (isReactive(child)) {
         const signal = child as Signal;
         const text = addText(element);
         // @ts-expect-error
         function textEff() {
           const value = signal.value;
-          queueMicrotask(() => (text.textContent = nonNull(value, "")))
+          queueMicrotask(() => (text.textContent = nonNull(value, "")));
         }
         text.addEventListener(
           "remove:node",
@@ -105,11 +105,16 @@ const bindDirectiveMap = {
       return;
     }
   },
-  value: (value: Signal, element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
+  value: (
+    value: Signal,
+    element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  ) => {
     if (!isReactive(value))
       raise(`The bind:value directive's value must be a signal.`);
-    if (!(['TEXTAREA', 'INPUT', 'SELECT'].includes(element.tagName)))
-      raise(`The bind:value directive cannot be used on <${element.tagName.toLowerCase()}> elements.`)
+    if (!["TEXTAREA", "INPUT", "SELECT"].includes(element.tagName))
+      raise(
+        `The bind:value directive cannot be used on <${element.tagName.toLowerCase()}> elements.`
+      );
     function bindValueEff() {
       element.value = value.value as any;
     }
@@ -117,15 +122,21 @@ const bindDirectiveMap = {
     element.addEventListener("input", ({ currentTarget }) => {
       value.value = (currentTarget as typeof element).value;
     });
-    element.addEventListener("remove:node", () => value.removeEffect(bindValueEff), {
-      once: true
-    });
+    element.addEventListener(
+      "remove:node",
+      () => value.removeEffect(bindValueEff),
+      {
+        once: true,
+      }
+    );
   },
   open: (value: Signal, element: HTMLDetailsElement) => {
     if (!isReactive(value))
       raise(`The bind:open directive's value must be a signal.`);
-    if (!(['DETAILS'].includes(element.tagName)))
-      raise(`The bind:open directive cannot be used on <${element.tagName.toLowerCase()}> elements.`)
+    if (!["DETAILS"].includes(element.tagName))
+      raise(
+        `The bind:open directive cannot be used on <${element.tagName.toLowerCase()}> elements.`
+      );
     function bindOpenEff() {
       element.open = value.value as any;
     }
@@ -133,17 +144,23 @@ const bindDirectiveMap = {
     element.addEventListener("toggle", ({ currentTarget }) => {
       value.value = (currentTarget as typeof element).open;
     });
-    element.addEventListener("remove:node", () => value.removeEffect(bindOpenEff), {
-      once: true
-    });
+    element.addEventListener(
+      "remove:node",
+      () => value.removeEffect(bindOpenEff),
+      {
+        once: true,
+      }
+    );
   },
   styles: (value: string, element: HTMLStyleElement) => {
     if (isReactive(value))
       raise(`The bind:styles directive's value must be a string.`);
-    if (!(['style'].includes(element.tagName)))
-      raise(`The bind:styles directive cannot be used on <${element.tagName.toLowerCase()}> elements.`)
-    element.textContent = value
-  }
+    if (!["style"].includes(element.tagName))
+      raise(
+        `The bind:styles directive cannot be used on <${element.tagName.toLowerCase()}> elements.`
+      );
+    element.textContent = value;
+  },
 };
 
 export const directiveMap = {
@@ -152,8 +169,7 @@ export const directiveMap = {
 
 type DirectiveMap = typeof directiveMap;
 
-type KeyOfAllDirectives =
-  | keyof DirectiveMap["bind:"];
+type KeyOfAllDirectives = keyof DirectiveMap["bind:"];
 
 export function handleDirectives_(
   prefix: keyof DirectiveMap,

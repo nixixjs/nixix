@@ -1,3 +1,4 @@
+import { REACTIVE } from "../shared";
 import { type EmptyObject } from "../dom";
 import { Signal, Store } from "./classes";
 import { type NonPrimitive } from "./types";
@@ -61,7 +62,7 @@ function forEach<T>(
 }
 
 function isReactive(value: any) {
-  return (value as Signal | Store).$$__reactive as boolean;
+  return (value as Signal | Store)?.[REACTIVE] as boolean;
 }
 
 export {

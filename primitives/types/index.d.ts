@@ -144,6 +144,10 @@ export function renderEffect(
   callbackFn: CallableFunction,
 ): void;
 
+/**
+ * @deprecated PLEASE DO NOT USE THIS FUNCTION;
+ * SIGNALS CAN JUST REMOVE EFFECTS
+ */
 export function removeSignal(
   signals: Array<Store<any> | Signal<any>> | Store<any> | Signal<any>
 ): void;
