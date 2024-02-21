@@ -1,8 +1,8 @@
 import { getSignalValue } from "../dom/helpers";
-import { nixixStore } from "../dom/index";
-import { DEPS, raise, isFunction } from "../shared";
+import { DEPS, isFunction, raise } from "../shared";
 import { Signal, Store } from "./classes";
 import {
+  ReactivityScope,
   cloneObject,
   forEach,
   isPrimitive,
@@ -53,12 +53,6 @@ function callSignal<S>(
   return [initValue as any, setter];
 }
 
-function closeReactiveProxyScope(fn: () => void) {
-  nixixStore.reactiveScope = false;
-  fn();
-  nixixStore.reactiveScope = true;
-}
-
 function callStore<S extends NonPrimitive>(
   initialValue: S,
   config?: {
@@ -75,9 +69,9 @@ function callStore<S extends NonPrimitive>(
     switch (true) {
       case config?.equals:
       default:
-        closeReactiveProxyScope(() => patchObj(initValue, newValuePassed));
+        ReactivityScope.runInClosed(() => patchObj(initValue, newValuePassed));
         patchObj(objCopy, newValuePassed);
-        initValue?.[DEPS]?.forEach?.((eff) => eff());
+        ReactivityScope.runInOpen(() => initValue?.[DEPS]?.forEach?.((eff) => eff?.()))
     }
   };
 
@@ -132,7 +126,7 @@ function subscribeDeps(
 }
 
 function addDep(cb: CallableFunction, dep: Signal | Store) {
-  dep?.[DEPS]?.add(cb)
+  dep?.[DEPS]?.add(cb);
 }
 
 function resolveImmediate(fn: CallableFunction) {
@@ -187,14 +181,14 @@ export {
   callRef,
   callSignal,
   callStore,
+  concat,
+  effect,
   getSignalValue,
   getValueType,
-  renderEffect,
-  splitProps,
   memo,
+  reaction,
+  renderEffect,
   signal,
-  concat,
+  splitProps,
   store,
-  effect,
-  reaction
 };

@@ -5,13 +5,9 @@ export type SetSignalDispatcher<S> = (newValue: S | ((prev: S) => S)) => void
 ;
 export type SetStoreDispatcher<S> = (newValue: S | ((prev: S) => S)) => void;
 
-export type Signal<S> = S extends null | undefined
-  ? {
-    readonly value: S;
-  } & string
-  : {
-    readonly value: S;
-  } & S;
+export type Signal<S> = {
+  value: S
+}
 
 export type Store<O> = {
   [index in keyof O]: O[index] extends NonPrimitive

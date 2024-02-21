@@ -1,4 +1,5 @@
 import { DEPS, REACTIVE, TOPRIMITIVE } from "../shared";
+import { ReactivityScope } from "./helpers";
 import { EFFECT_STACK } from "./shared";
 import { type Primitive } from "./types";
 
@@ -25,15 +26,19 @@ export class Signal {
 
   set value(newVal: Primitive) {
     this._value = newVal;
-    this[DEPS]?.forEach(fn => fn?.())
+    ReactivityScope.runInOpen(() => this[DEPS]?.forEach(fn => fn?.()))
   }
 
-  public removeEffect(fn: CallableFunction) {
+  removeEffect(fn: CallableFunction) {
     if (this[DEPS]?.has(fn)) {
       this[DEPS]?.delete(fn) 
       return true;
     } else return false;
   }
+
+  get hasEffects() {
+    return Boolean(this[DEPS]?.size);
+  } 
 }
 
 

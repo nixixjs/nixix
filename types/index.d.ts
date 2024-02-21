@@ -6,7 +6,7 @@
 import * as CSS from "csstype";
 import { AriaRole } from "./aria";
 import * as NativeEvents from "./eventhandlers";
-import { MutableRefObject as $MutableRefObject, RefObject as $RefObject, Signal } from "../primitives/types";
+import { MutableRefObject as $MutableRefObject, RefObject as $RefObject, Primitive, Signal } from "../primitives/types";
 
 type Booleanish = boolean | "true" | "false";
 
@@ -1397,11 +1397,8 @@ declare global {
   type someView = JSX.ElementType;
   namespace JSX {
     type ElementType =
-      | string
-      | number
-      | boolean
-      | null
-      | undefined
+      | Primitive
+      | Signal<Primitive>
       | Nixix.JSXElementConstructor<any>
       | typeof Nixix.Component
       | JSX.Element

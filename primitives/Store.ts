@@ -1,8 +1,9 @@
-import { entries, forEach, isPrimitive } from "./helpers";
+import { nixixStore } from "../dom/index";
 import { signal } from "../primitives";
-import { EmptyObject } from "../types";
-import { nixixStore } from '../dom/index'
 import { DEPS, REACTIVE } from "../shared";
+import { EmptyObject } from "../types";
+import { Signal } from "./Signal";
+import { entries, forEach, isPrimitive } from "./helpers";
 
 type StoreProps<T extends object | any[]> = {
   value?: T;
@@ -12,7 +13,7 @@ type StoreProxyHandler<T extends object> = ProxyHandler<T> & {
   signalMap: Map<string | symbol, ReturnType<typeof signal>>;
 };
 
-const arrayPropNames: (keyof Array<any>)[] = [ 'length' ]
+const arrayPropNames: (keyof Array<any>)[] = ["length"];
 
 function isArrayPropName(target: object | any[], p: any) {
   return Array.isArray(target) && arrayPropNames.includes(p);
@@ -25,11 +26,15 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
     get(target, p) {
       if (!nixixStore.reactiveScope) {
         if (!(p in target)) return null;
-        else return target[p]
+        else return target[p];
       }
       const val = target[p];
       let returnedValue: any = null;
-      if (!isPrimitive(val) || typeof p === "symbol" || isArrayPropName(target, p))
+      if (
+        !isPrimitive(val) ||
+        typeof p === "symbol" ||
+        isArrayPropName(target, p)
+      )
         returnedValue = val;
       else {
         let signalMap = this.signalMap;
@@ -44,14 +49,18 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
     },
     set(target, p, newValue) {
       target[p] = newValue;
-      const [, setSignal] = this.signalMap.get(p) || [] 
-      setSignal?.(newValue)
+      const [, setSignal] = this.signalMap.get(p) || [];
+      setSignal?.(newValue);
       return true;
     },
-    deleteProperty(target, p) {
-      const [, setSignal] = this.signalMap.get(p) || [] 
-      setSignal?.(null)
-      return true
+    deleteProperty(_, p) {
+      const [signal, setSignal] = this.signalMap.get(p) || [];
+      if (signal) {
+        setSignal?.(null);
+        !(signal as Signal).hasEffects &&
+          this.signalMap.delete(p)
+      }
+      return true;
     },
   } as StoreProxyHandler<EmptyObject>);
 
@@ -95,11 +104,11 @@ class Store_Array {
           // @ts-expect-error
           value[i] = new Store({ value: el });
           break;
-        }
-      });
-      const proxyvalue = createStoreProxy<Store>(value!);
-      proxyvalue[DEPS] = new Set();
-      proxyvalue[REACTIVE] = true;
+      }
+    });
+    const proxyvalue = createStoreProxy<Store>(value!);
+    proxyvalue[DEPS] = new Set();
+    proxyvalue[REACTIVE] = true;
     return proxyvalue;
   }
 }
