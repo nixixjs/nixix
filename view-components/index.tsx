@@ -1,5 +1,4 @@
 import { createFragment } from "../dom/helpers";
-import { flatten } from "../hoc/helpers";
 import type {
   ButtonHTMLAttributes,
   Children,
@@ -20,8 +19,7 @@ export const HStack = (props: BaseViewComponent): someView => {
   return (
     <section
       {...props}
-      className={`flex ${props.className ? props.className : ""}`}
-    >
+      className={`flex ${props.className ? props.className : ""}`}>
       {children}
     </section>
   );
@@ -34,7 +32,9 @@ export const VStack = (props: BaseViewComponent): someView => {
   const { children } = removeUnusedProps<Children>(props, "children");
 
   return (
-    <section {...props} className={props.className ?? ""}>
+    <section
+      {...props}
+      className={props.className ?? ""}>
       {children}
     </section>
   );
@@ -56,7 +56,9 @@ export const Aside = (props: BaseViewComponent): someView => {
   const { children } = removeUnusedProps<Children>(props, "children");
 
   return (
-    <aside {...props} className={props.className ?? ""}>
+    <aside
+      {...props}
+      className={props.className ?? ""}>
       {children}
     </aside>
   );
@@ -82,7 +84,12 @@ export const TextField = (
   removeUnusedProps<Children>(props, "children");
 
   return (
-    <input spellcheck autocapitalize={"sentences"} type={"text"} {...props} />
+    <input
+      spellcheck
+      autocapitalize={"sentences"}
+      type={"text"}
+      {...props}
+    />
   );
 };
 
@@ -95,7 +102,10 @@ export const TextArea = (
   const { children } = removeUnusedProps<Children>(props, "children");
 
   return (
-    <textarea spellcheck autocapitalize={"sentences"} {...props}>
+    <textarea
+      spellcheck
+      autocapitalize={"sentences"}
+      {...props}>
       {children}
     </textarea>
   );
@@ -110,7 +120,9 @@ export const Button = (
   const { children } = removeUnusedProps<Children>(props, "children");
 
   return (
-    <button style={{ cursor: "pointer" }} {...props}>
+    <button
+      style={{ cursor: "pointer" }}
+      {...props}>
       {children}
     </button>
   );
@@ -174,12 +186,7 @@ type TextNodeProps<T = string | number | boolean> = {
  */
 export const TextNode = (props: TextNodeProps): someView => {
   let { children } = props ? props : { children: [] };
-  return children
-    ? (() => {
-        children = flatten(children as []);
-        return createFragment(children as any);
-      })()
-    : [];
+  return children ? createFragment(children) : [];
 };
 
 export { BaseViewComponent, ViewComponent };

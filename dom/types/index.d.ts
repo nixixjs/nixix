@@ -7,7 +7,6 @@ type RouteType = {
 };
 
 interface $$__NixixStore {
-  $$__lastReactionProvider?: "signal" | "store";
   commentForLF: boolean;
   $$__routeStore?: {
     errorRoute?: RouteType;
@@ -18,7 +17,6 @@ interface $$__NixixStore {
     redirect?: string | null;
     currentRoute?: RouteType;
   };
-  refCount?: number;
 }
 
 declare module '../../types/index.d.ts' {

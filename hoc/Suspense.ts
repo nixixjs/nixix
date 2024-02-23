@@ -1,7 +1,8 @@
-import { raise, createFragment } from "../dom/helpers";
+import { createFragment } from "../dom/helpers";
 import { LiveFragment } from "../live-fragment";
 import { callStore, callReaction } from "../primitives";
 import { compFallback, createBoundary } from "./helpers";
+import { raise } from "../shared";
 
 export function Suspense(props: SuspenseProps) {
   let { children, onError, fallback } = props;

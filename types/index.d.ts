@@ -13,8 +13,6 @@ type Booleanish = boolean | "true" | "false";
 export = Nixix;
 export as namespace Nixix;
 
-Modifiers
-
 declare namespace Nixix {
   /**
    * @deprecated fragment - esbuild provides support for 'fragment' string

@@ -1,6 +1,6 @@
+import Nixix from "../dom";
 import { type ImgHTMLAttributes } from "../types";
-import Nixix, { nixixStore } from '../dom'
 
 export function Img(props: ImgHTMLAttributes<HTMLImageElement>) {
-  return (nixixStore.jsx = true), Nixix.create('img', { src: './' + props.src, ...props });
+  return Nixix.create("img", { src: "./" + props.src, ...props });
 }
