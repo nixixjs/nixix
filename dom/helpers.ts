@@ -1,7 +1,7 @@
 import { Signal, Store } from "../primitives/classes";
 import { isReactive } from "../primitives/helpers";
 import { effect } from "../primitives/index";
-import { isFunction, nonNull, raise } from "../shared";
+import { forEach, isFunction, nonNull, raise } from "../shared";
 import { type RefFunction } from "./types";
 
 export function checkDataType(value: any) {
@@ -83,7 +83,7 @@ export function addChildren(
 ) {
   if (children instanceof Array) {
     children = flatten(children);
-    children.forEach(fillInChildren(element));
+    forEach(children, fillInChildren(element));
   } else fillInChildren(element)(children);
 }
 

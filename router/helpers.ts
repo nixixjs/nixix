@@ -28,7 +28,7 @@ export function pushState(path?: string) {
 }
 
 export function changeRouteComment(path: string, ...comments: Comment[]) {
-  comments.forEach((c) => {
+  forEach(comments, (c) => {
     c.textContent = `${path}`;
   });
 }

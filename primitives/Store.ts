@@ -1,9 +1,9 @@
 import { nixixStore } from "../dom/index";
 import { signal } from "../primitives";
-import { DEPS, REACTIVE } from "../shared";
+import { DEPS, REACTIVE, forEach } from "../shared";
 import { EmptyObject } from "../types";
 import { Signal } from "./Signal";
-import { entries, forEach, isPrimitive } from "./helpers";
+import { entries, isPrimitive } from "./helpers";
 
 type StoreProps<T extends object | any[]> = {
   value?: T;

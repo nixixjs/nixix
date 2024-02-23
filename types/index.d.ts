@@ -13,7 +13,7 @@ type Booleanish = boolean | "true" | "false";
 export = Nixix;
 export as namespace Nixix;
 
-Details
+Modifiers
 
 declare namespace Nixix {
   /**
@@ -55,7 +55,9 @@ declare namespace Nixix {
 
   type RefFunction<T> = (({current}: RefObject<T>) => void)
 
-  type EventModifiers = '-preventDefault' | '-stopPropagation' | '-self';
+  type EventModifierSeparator = '_'
+
+  type EventModifiers<S = EventModifierSeparator> = `${S}preventDefault` | `${S}stopPropagation` | `${S}self` | `${S}once` | `${S}passive` | `${S}nonpassive` | `${S}capture`;
 
   interface CSSProperties extends CSS.Properties<string, number> {}
 
@@ -63,197 +65,115 @@ declare namespace Nixix {
 
     // clipboard events
     "on:copy"?: NativeEvents.ClipboardEventHandler<T>;
-    "on:copycapture"?: NativeEvents.ClipboardEventHandler<T>;
     "on:cut"?: NativeEvents.ClipboardEventHandler<T>;
-    "on:cutcapture"?: NativeEvents.ClipboardEventHandler<T>;
     "on:paste"?: NativeEvents.ClipboardEventHandler<T>;
-    "on:pastecapture"?: NativeEvents.ClipboardEventHandler<T>;
 
     // composition events
     "on:compositionend"?: NativeEvents.CompositionEventHandler<T>;
-    "on:compositionendcapture"?: NativeEvents.CompositionEventHandler<T>;
     "on:compositionstart"?: NativeEvents.CompositionEventHandler<T>;
-    "on:compositionstartcapture"?: NativeEvents.CompositionEventHandler<T>;
     "on:compositionupdate"?: NativeEvents.CompositionEventHandler<T>;
-    "on:compositionupdatecapture"?: NativeEvents.CompositionEventHandler<T>;
 
     // focus events
     "on:focus"?: NativeEvents.FocusEventHandler<T>;
-    "on:focuscapture"?: NativeEvents.FocusEventHandler<T>;
     "on:blur"?: NativeEvents.FocusEventHandler<T>;
-    "on:blurcapture"?: NativeEvents.FocusEventHandler<T>;
 
     // form events
     "on:change"?: NativeEvents.FormEventHandler<T>;
-    "on:changecapture"?: NativeEvents.FormEventHandler<T>;
     "on:beforeinput"?: NativeEvents.FormEventHandler<T>;
-    "on:beforeinputcapture"?: NativeEvents.FormEventHandler<T>;
     "on:input"?: NativeEvents.FormEventHandler<T>;
-    "on:inputcapture"?: NativeEvents.FormEventHandler<T>;
     "on:reset"?: NativeEvents.FormEventHandler<T>;
-    "on:resetcapture"?: NativeEvents.FormEventHandler<T>;
     "on:submit"?: NativeEvents.FormEventHandler<T>;
-    "on:submitcapture"?: NativeEvents.FormEventHandler<T>;
     "on:invalid"?: NativeEvents.FormEventHandler<T>;
-    "on:invalidcapture"?: NativeEvents.FormEventHandler<T>;
 
     // image events
     "on:load"?: NativeEvents.NixixEventHandler<T>;
-    "on:loadcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:error"?: NativeEvents.NixixEventHandler<T>; // also a media event
-    "on:errorcapture"?: NativeEvents.NixixEventHandler<T>; // also a media event
 
     // keyboard events
     "on:keydown"?: NativeEvents.KeyboardEventHandler<T>;
-    "on:keydowncapture"?: NativeEvents.KeyboardEventHandler<T>;
     /** @deprecated */
     "on:keypress"?: NativeEvents.KeyboardEventHandler<T>;
     /** @deprecated */
-    "on:keypresscapture"?: NativeEvents.KeyboardEventHandler<T>;
     "on:keyup"?: NativeEvents.KeyboardEventHandler<T>;
-    "on:keyupcapture"?: NativeEvents.KeyboardEventHandler<T>;
 
     // media events
     "on:abort"?: NativeEvents.NixixEventHandler<T>;
-    "on:abortcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:canplay"?: NativeEvents.NixixEventHandler<T>;
-    "on:canplaycapture"?: NativeEvents.NixixEventHandler<T>;
     "on:canplaythrough"?: NativeEvents.NixixEventHandler<T>;
-    "on:canplaythroughcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:durationchange"?: NativeEvents.NixixEventHandler<T>;
-    "on:durationchangecapture"?: NativeEvents.NixixEventHandler<T>;
     "on:emptied"?: NativeEvents.NixixEventHandler<T>;
-    "on:emptiedcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:encrypted"?: NativeEvents.NixixEventHandler<T>;
-    "on:encryptedcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:ended"?: NativeEvents.NixixEventHandler<T>;
-    "on:endedcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:loadeddata"?: NativeEvents.NixixEventHandler<T>;
-    "on:loadeddatacapture"?: NativeEvents.NixixEventHandler<T>;
     "on:loadedmetadata"?: NativeEvents.NixixEventHandler<T>;
-    "on:loadedmetadatacapture"?: NativeEvents.NixixEventHandler<T>;
     "on:loadstart"?: NativeEvents.NixixEventHandler<T>;
-    "on:loadstartcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:pause"?: NativeEvents.NixixEventHandler<T>;
-    "on:pausecapture"?: NativeEvents.NixixEventHandler<T>;
     "on:play"?: NativeEvents.NixixEventHandler<T>;
-    "on:playcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:playing"?: NativeEvents.NixixEventHandler<T>;
-    "on:playingcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:progress"?: NativeEvents.NixixEventHandler<T>;
-    "on:progresscapture"?: NativeEvents.NixixEventHandler<T>;
     "on:ratechange"?: NativeEvents.NixixEventHandler<T>;
-    "on:ratechangecapture"?: NativeEvents.NixixEventHandler<T>;
     "on:resize"?: NativeEvents.NixixEventHandler<T>;
-    "on:resizecapture"?: NativeEvents.NixixEventHandler<T>;
     "on:seeked"?: NativeEvents.NixixEventHandler<T>;
-    "on:seekedcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:seeking"?: NativeEvents.NixixEventHandler<T>;
-    "on:seekingcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:stalled"?: NativeEvents.NixixEventHandler<T>;
-    "on:stalledcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:suspend"?: NativeEvents.NixixEventHandler<T>;
-    "on:suspendcapture"?: NativeEvents.NixixEventHandler<T>;
     "on:timeupdate"?: NativeEvents.NixixEventHandler<T>;
-    "on:timeupdatecapture"?: NativeEvents.NixixEventHandler<T>;
     "on:volumechange"?: NativeEvents.NixixEventHandler<T>;
-    "on:volumechangecapture"?: NativeEvents.NixixEventHandler<T>;
     "on:waiting"?: NativeEvents.NixixEventHandler<T>;
-    "on:waitingcapture"?: NativeEvents.NixixEventHandler<T>;
 
     // mouseevents
     "on:auxclick"?: NativeEvents.MouseEventHandler<T>;
-    "on:auxclickcapture"?: NativeEvents.MouseEventHandler<T>;
     "on:click"?: NativeEvents.MouseEventHandler<T>;
-    "on:clickcapture"?: NativeEvents.MouseEventHandler<T>;
     "on:contextmenu"?: NativeEvents.MouseEventHandler<T>;
-    "on:contextmenucapture"?: NativeEvents.MouseEventHandler<T>;
     "on:doubleclick"?: NativeEvents.MouseEventHandler<T>;
-    "on:doubleclickcapture"?: NativeEvents.MouseEventHandler<T>;
     "on:drag"?: NativeEvents.DragEventHandler<T>;
-    "on:dragcapture"?: NativeEvents.DragEventHandler<T>;
     "on:dragend"?: NativeEvents.DragEventHandler<T>;
-    "on:dragendcapture"?: NativeEvents.DragEventHandler<T>;
     "on:dragenter"?: NativeEvents.DragEventHandler<T>;
-    "on:dragentercapture"?: NativeEvents.DragEventHandler<T>;
     "on:dragexit"?: NativeEvents.DragEventHandler<T>;
-    "on:dragexitcapture"?: NativeEvents.DragEventHandler<T>;
     "on:dragleave"?: NativeEvents.DragEventHandler<T>;
-    "on:dragleavecapture"?: NativeEvents.DragEventHandler<T>;
     "on:dragover"?: NativeEvents.DragEventHandler<T>;
-    "on:dragovercapture"?: NativeEvents.DragEventHandler<T>;
     "on:dragstart"?: NativeEvents.DragEventHandler<T>;
-    "on:dragstartcapture"?: NativeEvents.DragEventHandler<T>;
     "on:drop"?: NativeEvents.DragEventHandler<T>;
-    "on:dropcapture"?: NativeEvents.DragEventHandler<T>;
     "on:mousedown"?: NativeEvents.MouseEventHandler<T>;
-    "on:mousedowncapture"?: NativeEvents.MouseEventHandler<T>;
     "on:mouseenter"?: NativeEvents.MouseEventHandler<T>;
     "on:mouseleave"?: NativeEvents.MouseEventHandler<T>;
     "on:mousemove"?: NativeEvents.MouseEventHandler<T>;
-    "on:mousemovecapture"?: NativeEvents.MouseEventHandler<T>;
     "on:mouseout"?: NativeEvents.MouseEventHandler<T>;
-    "on:mouseoutcapture"?: NativeEvents.MouseEventHandler<T>;
     "on:mouseover"?: NativeEvents.MouseEventHandler<T>;
-    "on:mouseovercapture"?: NativeEvents.MouseEventHandler<T>;
     "on:mouseup"?: NativeEvents.MouseEventHandler<T>;
-    "on:mouseupcapture"?: NativeEvents.MouseEventHandler<T>;
 
     // selection: events
     "on:select"?: NativeEvents.NixixEventHandler<T>;
-    "on:selectcapture"?: NativeEvents.NixixEventHandler<T>;
 
     // touch events
     "on:touchcancel"?: NativeEvents.TouchEventHandler<T>;
-    "on:touchcancelcapture"?: NativeEvents.TouchEventHandler<T>;
     "on:touchend"?: NativeEvents.TouchEventHandler<T>;
-    "on:touchendcapture"?: NativeEvents.TouchEventHandler<T>;
     "on:touchmove"?: NativeEvents.TouchEventHandler<T>;
-    "on:touchmovecapture"?: NativeEvents.TouchEventHandler<T>;
     "on:touchstart"?: NativeEvents.TouchEventHandler<T>;
-    "on:touchstartcapture"?: NativeEvents.TouchEventHandler<T>;
 
     // pointer events
     "on:pointerdown"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointerdowncapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointermove"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointermovecapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointerup"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointerupcapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointercancel"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointercancelcapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointerenter"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointerentercapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointerleave"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointerleavecapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointerover"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointerovercapture"?: NativeEvents.MouseEventHandler<T>;
     "on:pointerout"?: NativeEvents.MouseEventHandler<T>;
-    "on:pointeroutcapture"?: NativeEvents.MouseEventHandler<T>;
-    "on:gotpointercapture"?: NativeEvents.MouseEventHandler<T>;
-    "on:gotpointercapturecapture"?: NativeEvents.MouseEventHandler<T>;
-    "on:lostpointercapture"?: NativeEvents.MouseEventHandler<T>;
-    "on:lostpointercapturecapture"?: NativeEvents.MouseEventHandler<T>;
 
     // ui events
     "on:scroll"?: NativeEvents.UIEventHandler<T>;
-    "on:scrollcapture"?: NativeEvents.UIEventHandler<T>;
 
     // wheel events
     "on:wheel"?: NativeEvents.WheelEventHandler<T>;
-    "on:wheelcapture"?: NativeEvents.WheelEventHandler<T>;
 
     // animation events
     "on:animationstart"?: NativeEvents.AnimationEventHandler<T>;
-    "on:animationstartcapture"?: NativeEvents.AnimationEventHandler<T>;
     "on:animationend"?: NativeEvents.AnimationEventHandler<T>;
-    "on:animationendcapture"?: NativeEvents.AnimationEventHandler<T>;
     "on:animationiteration"?: NativeEvents.AnimationEventHandler<T>;
-    "on:animationiterationcapture"?: NativeEvents.AnimationEventHandler<T>;
 
     // transition events
     "on:transitionend"?: NativeEvents.TransitionEventHandler<T>;
-    "on:transitionendcapture"?: NativeEvents.TransitionEventHandler<T>;
   }
 
   type EventAttributesWithModifiers<T> = {

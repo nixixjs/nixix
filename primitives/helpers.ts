@@ -1,4 +1,4 @@
-import { REACTIVE } from "../shared";
+import { REACTIVE, forEach } from "../shared";
 import { type EmptyObject } from "../dom";
 import { nixixStore } from "../dom/index";
 import { Signal, Store } from "./classes";
@@ -49,23 +49,9 @@ export function isPrimitive(value: any) {
   );
 }
 
-type ForEachParams<T> = Parameters<Array<T>["forEach"]>;
-
-/**
- * Returns void, to be used when you want to mutate some outside code in an array
- */
-export function forEach<T>(
-  arr: Array<T>,
-  cb: ForEachParams<T>[0],
-  thisArg?: ForEachParams<T>[1]
-) {
-  arr?.forEach?.(cb, thisArg);
-}
-
 export function isReactive(value: any) {
   return (value as Signal | Store)?.[REACTIVE] as boolean;
 }
-
 
 export class ReactivityScope {
   /**

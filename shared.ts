@@ -27,3 +27,16 @@ export function nonNull<V>(value: V, fallback: any) {
 export function isFunction(val: any) {
   return typeof val === "function";
 }
+
+type ForEachParams<T> = Parameters<Array<T>["forEach"]>;
+
+/**
+ * Returns void, to be used when you want to mutate some outside code in an array
+ */
+export function forEach<T>(
+  arr: Array<T>,
+  cb: ForEachParams<T>[0],
+  thisArg?: ForEachParams<T>[1]
+) {
+  arr?.forEach?.(cb, thisArg);
+}

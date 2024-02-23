@@ -1,10 +1,9 @@
 import { getSignalValue } from "../dom/helpers";
-import { DEPS, isFunction, raise } from "../shared";
+import { DEPS, isFunction, raise, forEach } from "../shared";
 import { Signal, Store } from "./classes";
 import {
   ReactivityScope,
   cloneObject,
-  forEach,
   isPrimitive,
   splitProps,
 } from "./helpers";

@@ -1,7 +1,7 @@
 import { Signal } from "../primitives/classes";
 import { entries, isReactive } from "../primitives/helpers";
 import { effect } from "../primitives/index";
-import { isFunction, isNull, nonNull, raise, warn } from "../shared";
+import { forEach, isFunction, isNull, nonNull, raise, warn } from "../shared";
 import Component from "./Component";
 import { addChildren, handleDirectives_, raiseIfReactive } from "./helpers";
 import { PROP_ALIASES, SVG_ELEMENTTAGS, SVG_NAMESPACE } from "./utilVars";
@@ -94,6 +94,42 @@ function setStyle(element: NixixElementType, styleValue: StyleValueType) {
   }
 }
 
+function eventWrapperFunction() {
+  const callbacks = [] as any[]
+  return (cb: (e: Event) => void, isListener = false) => {
+    callbacks.push(cb)
+    if (isListener === true) return (e: any) => (forEach(callbacks, (c) => c(e)))
+  }
+}
+
+const configProps = ['once' , 'passive', 'capture', 'nonpassive'] as const;
+
+const eventMethods = ['preventDefault' , 'stopPropagation', 'self'] as const
+
+type Modifier<T extends 'config' | 'methods'> = T extends 'config' ? typeof configProps[number] : typeof eventMethods[number]
+
+function parseEventModifiers(domAttribute: string, element: NixixElementType, listener: EventListener) {
+  const eventConfig = {
+  } as Record<string, any>;
+
+  const [eventType, ...modifiers] = domAttribute.split('_') as [string, (Modifier<'config'> | Modifier<'methods'>)];
+  let selfModifier: EventListener | null = null;
+  if (Boolean(modifiers.length)) {
+    const addEventCallback = eventWrapperFunction()
+    forEach(modifiers, (m) => {
+      if (configProps.includes(m as Modifier<'config'>)) {
+        if (m === 'nonpassive') eventConfig['passive'] = false
+        else eventConfig[m] = true
+      }
+      else if (eventMethods.includes(m as Modifier<'methods'> )) {
+        if (m === 'self') (selfModifier = ((e) => (e.target === element) && listener(e)))
+        else addEventCallback((e) => e[m as Exclude<Modifier<'methods'>, 'self'>]?.())
+      }
+    })
+    element.addEventListener(eventType, addEventCallback(selfModifier || ((e) => listener(e)), true)!, eventConfig)
+  } else element.addEventListener(eventType, listener);
+}
+
 function setProps(props: Proptype | null, element: NixixElementType) {
   if (props) {
     props = Object.entries(props);
@@ -115,7 +151,7 @@ function setProps(props: Proptype | null, element: NixixElementType) {
           );
         raiseIfReactive(v as any, k);
         const domAttribute = k.slice(3);
-        element.addEventListener(domAttribute, v as any);
+        parseEventModifiers(domAttribute, element, v as unknown as EventListener)
       } else if (k.startsWith("bind:")) {
         if (isNull(v))
           return warn(
