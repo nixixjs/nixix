@@ -1,15 +1,22 @@
 import { nixixStore } from "../dom/index";
-import { type Primitive, signal, NonPrimitive } from "../primitives";
+import { NonPrimitive, signal, type Primitive } from "../primitives";
 import { DELETEDPROPMAP, DEPS, REACTIVE, SIGNALMAP, forEach } from "../shared";
 import { EmptyObject } from "../types";
-import { entries, isPrimitive } from "./helpers";
+import { ReactivityScope, entries, isPrimitive } from "./helpers";
 import { patchObj } from "./patchObj";
+import { queueStoreEffects } from "./shared";
 
 type StoreProps<T extends object | any[]> = {
   value?: T;
 };
 
 const arrayPropNames: (keyof Array<any>)[] = ["length"];
+
+const jsInternalPropNames = ['toJSON']
+
+function isSkippableProp(target: object | any[], p: any) {
+  return jsInternalPropNames.includes(p) || isArrayPropName(target, p)
+}
 
 function isArrayPropName(target: object | any[], p: any) {
   return Array.isArray(target) && arrayPropNames.includes(p);
@@ -18,8 +25,8 @@ function isArrayPropName(target: object | any[], p: any) {
 function createStoreProxy<T = EmptyObject>(obj: Store): T {
   obj[DEPS] = new Set();
   obj[REACTIVE] = true;
-  obj[SIGNALMAP] = new Map()
-  obj[DELETEDPROPMAP] = new Map()
+  obj[SIGNALMAP] = new Map();
+  obj[DELETEDPROPMAP] = new Map();
 
   const proxy = new Proxy<EmptyObject>(obj, {
     get(target, p) {
@@ -32,7 +39,7 @@ function createStoreProxy<T = EmptyObject>(obj: Store): T {
       if (
         !isPrimitive(val) ||
         typeof p === "symbol" ||
-        isArrayPropName(target, p)
+        isSkippableProp(target, p)
       )
         returnedValue = val;
       else {
@@ -51,11 +58,11 @@ function createStoreProxy<T = EmptyObject>(obj: Store): T {
         if (!(p in target)) {
           const deletedPropMap = obj[DELETEDPROPMAP];
           if (deletedPropMap.has(p)) {
-            const oldValue = deletedPropMap.get(p)
-            target[p] = oldValue
-            patchObj(oldValue!, newValue)
-            deletedPropMap.delete(p)
-          } else target[p] = new Store({ value: newValue })
+            const oldValue = deletedPropMap.get(p);
+            target[p] = oldValue;
+            ReactivityScope.runInClosed(() => patchObj(oldValue!, newValue));
+            deletedPropMap.delete(p);
+          } else target[p] = new Store({ value: newValue });
         }
       } else {
         target[p] = newValue;
@@ -63,12 +70,14 @@ function createStoreProxy<T = EmptyObject>(obj: Store): T {
         const [, setSignal] = obj[SIGNALMAP].get(p) || [];
         setSignal?.(newValue);
       }
+      if (obj[DEPS].size) queueStoreEffects(obj)
       return true;
     },
+
     deleteProperty(target, p) {
       const value = target[p];
       if (!isPrimitive(value)) {
-        obj[DELETEDPROPMAP].set(p, value)
+        obj[DELETEDPROPMAP].set(p, value);
       } else {
         const [, setSignal] = obj[SIGNALMAP].get(p) || [];
         setSignal?.(null);
@@ -79,7 +88,6 @@ function createStoreProxy<T = EmptyObject>(obj: Store): T {
 
   return proxy as T;
 }
-
 export class Store {
   constructor({ value }: StoreProps<object | any[]>) {
     // @ts-expect-error
@@ -125,6 +133,6 @@ class Store_Array {
 export interface Store {
   [REACTIVE]: true;
   [DEPS]: Set<CallableFunction>;
-  [SIGNALMAP]: Map<string | symbol, ReturnType<typeof signal<Primitive>>> 
-  [DELETEDPROPMAP]: Map<string | symbol, NonPrimitive> 
+  [SIGNALMAP]: Map<string | symbol, ReturnType<typeof signal<Primitive>>>;
+  [DELETEDPROPMAP]: Map<string | symbol, NonPrimitive>;
 }

@@ -61,16 +61,13 @@ function callStore<S extends NonPrimitive>(
   let value = cloneObject(
     isFunction(initialValue) ? (initialValue as Function)() : initialValue
   );
-  let objCopy = cloneObject(value);
   const initValue = new Store({ value });
   const setter = (newValue: (prev?: any) => any) => {
-    let newValuePassed = isFunction(newValue) ? newValue(objCopy) : newValue;
+    let newValuePassed = isFunction(newValue) ? newValue(cloneObject(value)) : newValue;
     switch (true) {
       case config?.equals:
       default:
         ReactivityScope.runInClosed(() => patchObj(initValue, newValuePassed));
-        patchObj(objCopy, newValuePassed);
-        ReactivityScope.runInOpen(() => initValue?.[DEPS]?.forEach?.((eff) => eff?.()))
     }
   };
 

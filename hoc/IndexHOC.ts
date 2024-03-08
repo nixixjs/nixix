@@ -3,11 +3,11 @@ import { LiveFragment } from "../live-fragment";
 import { callReaction } from "../primitives";
 import {
   arrayOfJSX,
-  createBoundary,
-  removeNodes,
-  numArray,
-  getIncrementalNodes,
   compFallback,
+  createBoundary,
+  getIncrementalNodes,
+  numArray,
+  removeNodes,
 } from "./helpers";
 
 export function Index(props: ForProps) {

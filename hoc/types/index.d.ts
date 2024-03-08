@@ -80,15 +80,18 @@ interface ForProps<T extends Store<any[]>> extends ComponentFallback {
   children: (item: T[number], i: number) => someView;
 }
 
+interface IndexProps<T extends Store<any[]>> extends ForProps<T> {} 
+
 /**
- * Use this function if you want to destroy nodes when the new state array is less.
+ * Destroys nodes when they are removed from the DOM
  */
 export declare function For<T extends any[]>(props?: ForProps<T>): someView;
 
 /**
- * Use this function if you want to cache nodes when the new state array is less.
+ * Stores nodes in memory to be reused when needed.
+ * Use the `For` component if you don't want this behaviour.
  */
-export declare function Index<T extends any[]>(props?: ForProps<T>): someView; 
+export declare function Index<T extends any[]>(props?: IndexProps<T>): someView; 
 
 interface ShowProps<T> extends ComponentFallback {
   when: () => boolean;
