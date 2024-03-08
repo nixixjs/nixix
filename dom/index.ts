@@ -2,7 +2,7 @@ import { Signal } from "../primitives/classes";
 import { entries, isReactive } from "../primitives/helpers";
 import { effect } from "../primitives/index";
 import { forEach, isFunction, isNull, nonNull, raise, warn } from "../shared";
-import Component from "./Component";
+import Component, { bind } from "./Component";
 import { addChildren, handleDirectives_, raiseIfReactive } from "./helpers";
 import { PROP_ALIASES, SVG_ELEMENTTAGS, SVG_NAMESPACE } from "./utilVars";
 
@@ -272,4 +272,4 @@ const Nixix = {
 const create = Nixix.create;
 
 export default Nixix;
-export { Component, buildComponent, create, removeNode, render, setAttribute };
+export { Component, bind,  buildComponent, create, removeNode, render, setAttribute };

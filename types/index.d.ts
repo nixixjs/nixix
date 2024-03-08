@@ -4,9 +4,14 @@
 /// <reference path="global.d.ts" />
 
 import * as CSS from "csstype";
+import {
+  MutableRefObject as $MutableRefObject,
+  RefObject as $RefObject,
+  Primitive,
+  Signal,
+} from "../primitives/types";
 import { AriaRole } from "./aria";
 import * as NativeEvents from "./eventhandlers";
-import { MutableRefObject as $MutableRefObject, RefObject as $RefObject, Primitive, Signal } from "../primitives/types";
 
 type Booleanish = boolean | "true" | "false";
 
@@ -28,13 +33,20 @@ declare namespace Nixix {
   };
 
   class Component {
-    constructor (props?: {});
-  
+    constructor(props?: {});
+
     /**
      * This function is used to render the jsx
      */
     jsx(): someView;
   }
+
+  /**
+   * Return a descriptor removing the value and returning a getter
+   * The getter will return a .bind version of the function
+   * and memoize the result against a symbol on the instance
+   */
+  const bind: MethodDecorator;
 
   type NixixNode = JSX.ElementType | Iterable<JSX.ElementType>;
 
@@ -46,16 +58,22 @@ declare namespace Nixix {
 
   type RouteExoticComponent<T> = T;
 
-  type RefFunction<T> = (({current}: RefObject<T>) => void)
+  type RefFunction<T> = ({ current }: RefObject<T>) => void;
 
-  type EventModifierSeparator = '_'
+  type EventModifierSeparator = "_";
 
-  type EventModifiers<S = EventModifierSeparator> = `${S}preventDefault` | `${S}stopPropagation` | `${S}self` | `${S}once` | `${S}passive` | `${S}nonpassive` | `${S}capture`;
+  type EventModifiers<S = EventModifierSeparator> =
+    | `${S}preventDefault`
+    | `${S}stopPropagation`
+    | `${S}self`
+    | `${S}once`
+    | `${S}passive`
+    | `${S}nonpassive`
+    | `${S}capture`;
 
   interface CSSProperties extends CSS.Properties<string, number> {}
 
   interface EventAttributes<T> {
-
     // clipboard events
     "on:copy"?: NativeEvents.ClipboardEventHandler<T>;
     "on:cut"?: NativeEvents.ClipboardEventHandler<T>;
@@ -170,8 +188,8 @@ declare namespace Nixix {
   }
 
   type EventAttributesWithModifiers<T> = {
-    [index in keyof EventAttributes<T> as `${index}${EventModifiers}`]: EventAttributes<T>[index] 
-  } & EventAttributes<T>
+    [index in keyof EventAttributes<T> as `${index}${EventModifiers}`]: EventAttributes<T>[index];
+  } & EventAttributes<T>;
 
   interface BindDirectives<T> {
     "bind:ref"?: MutableRefObject<T | null> | RefFunction<T>;
@@ -878,11 +896,11 @@ declare namespace Nixix {
   }
 
   interface StyleHTMLAttributes<T> extends HTMLAttributes<T> {
-    "bind:styles": string
+    "bind:styles": string;
     media?: string;
     nonce?: string;
     scoped?: boolean;
-    type?: 'text/css';
+    type?: "text/css";
   }
 
   interface TableHTMLAttributes<T> extends HTMLAttributes<T> {

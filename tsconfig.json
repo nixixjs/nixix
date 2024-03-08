@@ -6,6 +6,7 @@
     "strict": true,
     "jsxImportSource": "types",
     "module": "es2020",
+    "experimentalDecorators": true,
     "noUnusedLocals": true,
     "types": ["./types", "@remix-run/router"],
     "moduleResolution": "Bundler",
