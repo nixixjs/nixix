@@ -2,7 +2,7 @@ import { REACTIVE, forEach } from "../shared";
 import { type EmptyObject } from "../dom";
 import { nixixStore } from "../dom/index";
 import { Signal, Store } from "./classes";
-import { type NonPrimitive } from "./types";
+import { Primitive, type NonPrimitive } from "./types";
 
 export function splitProps<T extends EmptyObject<any>>(obj: T, ...props: (keyof T)[]) {
   const splittedProps: Record<any, any> = {};
@@ -42,7 +42,7 @@ export function checkType(value: string | number | boolean) {
   return type;
 }
 
-export function isPrimitive(value: any) {
+export function isPrimitive(value: Primitive | NonPrimitive): value is Primitive {
   return (
     ["string", "boolean", "number", "bigint"].includes(typeof value) ||
     isNull(value)

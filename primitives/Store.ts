@@ -1,16 +1,12 @@
 import { nixixStore } from "../dom/index";
-import { signal } from "../primitives";
-import { DEPS, REACTIVE, forEach } from "../shared";
+import { type Primitive, signal, NonPrimitive } from "../primitives";
+import { DELETEDPROPMAP, DEPS, REACTIVE, SIGNALMAP, forEach } from "../shared";
 import { EmptyObject } from "../types";
-import { Signal } from "./Signal";
 import { entries, isPrimitive } from "./helpers";
+import { patchObj } from "./patchObj";
 
 type StoreProps<T extends object | any[]> = {
   value?: T;
-};
-
-type StoreProxyHandler<T extends object> = ProxyHandler<T> & {
-  signalMap: Map<string | symbol, ReturnType<typeof signal>>;
 };
 
 const arrayPropNames: (keyof Array<any>)[] = ["length"];
@@ -19,10 +15,13 @@ function isArrayPropName(target: object | any[], p: any) {
   return Array.isArray(target) && arrayPropNames.includes(p);
 }
 
-function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
-  // there are levels to each proxy; so we can use a Map to store the names and signals for each;
+function createStoreProxy<T = EmptyObject>(obj: Store): T {
+  obj[DEPS] = new Set();
+  obj[REACTIVE] = true;
+  obj[SIGNALMAP] = new Map()
+  obj[DELETEDPROPMAP] = new Map()
+
   const proxy = new Proxy<EmptyObject>(obj, {
-    signalMap: new Map(),
     get(target, p) {
       if (!nixixStore.reactiveScope) {
         if (!(p in target)) return null;
@@ -37,7 +36,7 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
       )
         returnedValue = val;
       else {
-        let signalMap = this.signalMap;
+        let signalMap = obj[SIGNALMAP];
         if (signalMap.has(p)) returnedValue = signalMap.get(p)?.[0];
         else {
           const valueSignal = signal(val);
@@ -48,21 +47,35 @@ function createStoreProxy<T = EmptyObject>(obj: object | any[]): T {
       return returnedValue;
     },
     set(target, p, newValue) {
-      target[p] = newValue;
-      const [, setSignal] = this.signalMap.get(p) || [];
-      setSignal?.(newValue);
-      return true;
-    },
-    deleteProperty(_, p) {
-      const [signal, setSignal] = this.signalMap.get(p) || [];
-      if (signal) {
-        setSignal?.(null);
-        !(signal as Signal).hasEffects &&
-          this.signalMap.delete(p)
+      if (!isPrimitive(newValue)) {
+        if (!(p in target)) {
+          const deletedPropMap = obj[DELETEDPROPMAP];
+          if (deletedPropMap.has(p)) {
+            const oldValue = deletedPropMap.get(p)
+            target[p] = oldValue
+            patchObj(oldValue!, newValue)
+            deletedPropMap.delete(p)
+          } else target[p] = new Store({ value: newValue })
+        }
+      } else {
+        target[p] = newValue;
+        if (isArrayPropName(target, p)) return true;
+        const [, setSignal] = obj[SIGNALMAP].get(p) || [];
+        setSignal?.(newValue);
       }
       return true;
     },
-  } as StoreProxyHandler<EmptyObject>);
+    deleteProperty(target, p) {
+      const value = target[p];
+      if (!isPrimitive(value)) {
+        obj[DELETEDPROPMAP].set(p, value)
+      } else {
+        const [, setSignal] = obj[SIGNALMAP].get(p) || [];
+        setSignal?.(null);
+      }
+      return true;
+    },
+  });
 
   return proxy as T;
 }
@@ -88,9 +101,7 @@ class Store_Object {
           break;
       }
     });
-    const proxyvalue = createStoreProxy<Store>(value!);
-    proxyvalue[DEPS] = new Set();
-    proxyvalue[REACTIVE] = true;
+    const proxyvalue = createStoreProxy<Store>(value as Store);
     return proxyvalue;
   }
 }
@@ -106,9 +117,7 @@ class Store_Array {
           break;
       }
     });
-    const proxyvalue = createStoreProxy<Store>(value!);
-    proxyvalue[DEPS] = new Set();
-    proxyvalue[REACTIVE] = true;
+    const proxyvalue = createStoreProxy<Store>(value as Store);
     return proxyvalue;
   }
 }
@@ -116,4 +125,6 @@ class Store_Array {
 export interface Store {
   [REACTIVE]: true;
   [DEPS]: Set<CallableFunction>;
+  [SIGNALMAP]: Map<string | symbol, ReturnType<typeof signal<Primitive>>> 
+  [DELETEDPROPMAP]: Map<string | symbol, NonPrimitive> 
 }

@@ -43,6 +43,8 @@ const esbuildOptions = {
 };
 
 const devEsbuildOptions = {
+  jsxDev: false,
+  jsx: "transform",
   jsxFactory: "$Nixix.create",
   jsxFragment: "'fragment'",
   jsxImportSource: "./index.js",

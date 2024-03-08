@@ -1,3 +1,4 @@
+// @ts-nocheck
 import config from "./config";
 import utils from "./utils";
 

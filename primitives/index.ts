@@ -79,7 +79,7 @@ function callStore<S extends NonPrimitive>(
 
 function getValueType<T>(value: any) {
   if (isFunction(value)) raise(`Cannot pass a function as a reactive value.`);
-  if (isPrimitive(value)) return callSignal<T>(value);
+  if (isPrimitive(value)) return callSignal<Primitive>(value);
   if (typeof value === "object") return callStore<NonPrimitive>(value);
 }
 

@@ -2,6 +2,10 @@ export const REACTIVE = Symbol.for('reactive')
 
 export const DEPS = Symbol.for('deps')
 
+export const SIGNALMAP = Symbol.for('signalMap')
+
+export const DELETEDPROPMAP = Symbol.for('deletedPropMap');
+
 export const TOPRIMITIVE = Symbol.toPrimitive;
 
 export function raise(message: string) {
@@ -24,7 +28,7 @@ export function nonNull<V>(value: V, fallback: any) {
   return isNull(value) ? fallback : value;
 }
 
-export function isFunction(val: any) {
+export function isFunction(val: any): val is CallableFunction {
   return typeof val === "function";
 }
 

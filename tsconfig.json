@@ -9,7 +9,9 @@
     "noUnusedLocals": true,
     "types": ["./types", "@remix-run/router"],
     "moduleResolution": "Bundler",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./**/*"]
 }
