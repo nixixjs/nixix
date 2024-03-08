@@ -1,6 +1,5 @@
-import { nixixStore, removeNode } from "../dom/index";
 import { createFragment, createText } from "../dom/helpers";
-import { Store } from "../primitives/classes";
+import { nixixStore, removeNode } from "../dom/index";
 import { LiveFragment } from "../live-fragment/types";
 
 export function comment(str: string) {
@@ -94,9 +93,6 @@ export function getIncrementalNodes(
   callback: Required<ForProps>["children"][number]
 ) {
   let returnedValue = indexArray.map((nIndex) => {
-    each[nIndex] = new Store({
-      value: each[nIndex],
-    });
     return callback(each[nIndex], nIndex) as any;
   });
   return returnedValue;
