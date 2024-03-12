@@ -1,6 +1,14 @@
 import { join, normalize } from "path";
 
-export default function NixixHMR(projectRoot, dev) {
+/**
+ * 
+ * @param { {
+ * projectRoot?: `${string}/${string}`,
+ * dev?: boolean
+ * }} options 
+ * @returns 
+ */
+export default function NixixHMR({projectRoot, dev} = { dev: false }) {
   const hmrplugin = {
     name: "nixix-vite-hmr",
     apply: "serve",
