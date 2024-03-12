@@ -70,7 +70,7 @@ export function splitProps<T extends EmptyObject<any>, K extends keyof T>(obj: T
   [index in K]: T[K]
 }
 
-export function getValueType<T>(value: T): T[] | undefined;
+export function getValueType<T>(value: T): T[];
 
 export function getSignalValue<S extends Primitive>(value: Signal<S>): S;
 

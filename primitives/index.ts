@@ -76,8 +76,8 @@ function callStore<S extends NonPrimitive>(
 
 function getValueType<T>(value: any) {
   if (isFunction(value)) raise(`Cannot pass a function as a reactive value.`);
-  if (isPrimitive(value)) return callSignal<Primitive>(value);
-  if (typeof value === "object") return callStore<NonPrimitive>(value);
+  if (isPrimitive(value)) return signal<Primitive>(value);
+  if (typeof value === "object") return store<NonPrimitive>(value);
 }
 
 function memo<T>(fn: () => T, deps: any[]) {
@@ -129,8 +129,6 @@ function resolveImmediate(fn: CallableFunction) {
   queueMicrotask(fn as () => void);
 }
 
-const effect = callEffect;
-
 function callEffect(callbackFn: CallableFunction) {
   resolveImmediate(() => {
     try {
@@ -141,8 +139,6 @@ function callEffect(callbackFn: CallableFunction) {
     }
   });
 }
-
-const reaction = callReaction;
 
 function callReaction(callbackFn: CallableFunction, deps?: (Signal | Store)[]) {
   subscribeDeps(callbackFn, deps);
@@ -169,6 +165,11 @@ const signal = callSignal;
 
 const store = callStore;
 
+
+const effect = callEffect;
+
+const reaction = callReaction;
+
 export {
   Signal,
   Store,
@@ -178,13 +179,13 @@ export {
   callSignal,
   callStore,
   concat,
-  effect,
   getSignalValue,
   getValueType,
   memo,
-  reaction,
   renderEffect,
-  signal,
   splitProps,
+  signal,
+  effect,
+  reaction,
   store,
 };

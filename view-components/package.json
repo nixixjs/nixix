@@ -5,7 +5,8 @@
   "types": "./index.d.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "emit": "npx tsc index.tsx --declaration --emitDeclarationOnly --jsx preserve --lib es2020,dom --skipLibCheck true"
   },
   "keywords": [],
   "author": "Charles Ikechukwu",

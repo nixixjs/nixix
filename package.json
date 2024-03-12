@@ -23,5 +23,8 @@
     "csstype": "latest",
     "vite": "latest",
     "vite-jsconfig-paths": "latest"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.2"
   }
 }

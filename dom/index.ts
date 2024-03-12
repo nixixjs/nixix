@@ -272,4 +272,4 @@ const Nixix = {
 const create = Nixix.create;
 
 export default Nixix;
-export { Component, bind,  buildComponent, create, removeNode, render, setAttribute };
+export { Component, bind, buildComponent, create, removeNode, render, setAttribute };

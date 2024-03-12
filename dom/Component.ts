@@ -1,4 +1,18 @@
-class Component {}
+import { getValueType } from "../primitives/index";
+
+class Component {
+  static State<S>(value: S) {
+    const [val, setValue] = getValueType(value)!;
+    return {
+      get() {
+        return val;
+      },
+      set(newValue: S | ((prev: S) => S)) {
+        setValue(newValue);
+      },
+    };
+  }
+}
 
 /**
  * Return a descriptor removing the value and returning a getter

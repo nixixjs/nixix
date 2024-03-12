@@ -7,8 +7,12 @@ import * as CSS from "csstype";
 import {
   MutableRefObject as $MutableRefObject,
   RefObject as $RefObject,
+  NonPrimitive,
   Primitive,
+  SetSignalDispatcher,
+  SetStoreDispatcher,
   Signal,
+  Store,
 } from "../primitives/types";
 import { AriaRole } from "./aria";
 import * as NativeEvents from "./eventhandlers";
@@ -34,6 +38,16 @@ declare namespace Nixix {
 
   class Component {
     constructor(props?: {});
+
+    static State<S extends Primitive>(value: S): {
+      get: () => Signal<S>;
+      set: SetSignalDispatcher<S>
+    }
+
+    static State<S extends NonPrimitive>(value: S): {
+      get: () => Store<S>;
+      set: SetStoreDispatcher<S>
+    }
 
     /**
      * This function is used to render the jsx
@@ -917,7 +931,7 @@ declare namespace Nixix {
 
   interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
     autocomplete?: string;
-    "bind:value": Signal<string>;
+    "bind:value"?: Signal<string>;
     cols?: number | string;
     dirname?: string;
     disabled?: boolean;
