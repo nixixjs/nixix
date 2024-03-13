@@ -2,9 +2,8 @@ import { nixixStore } from "../dom";
 import { createFragment, createText } from "../dom/helpers";
 import { comment } from "../hoc/helpers";
 import { LiveFragment } from "../live-fragment";
-import { getWinPath } from "./helpers";
-import { callEffect } from "../primitives";
 import { navigate } from "./Router";
+import { getWinPath } from "./helpers";
 
 export type RouteStoreType = typeof nixixStore.$$__routeStore;
 
@@ -40,6 +39,6 @@ export function createBrowserRouter(config: BrowserRouterConfig) {
   const { routes } = config;
   nixixStore.$$__routeStore = routes;
   window.onpopstate = popHandler;
-  callEffect(popHandler);
+  queueMicrotask(popHandler);
   return createRouteLF(routes);
 }

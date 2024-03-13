@@ -1,10 +1,10 @@
-import { create } from "../dom";
-import { callAction } from "./callAction";
-import { getLink, lastElement, len } from "./helpers";
-import type { FormActionProps } from "./types/index";
 import { matchRoutes } from "@remix-run/router";
+import { create } from "../dom";
+import { raise } from "../shared";
+import { callAction } from "./callAction";
+import { lastElement, len } from "./helpers";
+import type { FormActionProps } from "./types/index";
 import { agnosticRouteObjects } from "./utils";
-import { raise } from "dom/helpers";
 
 export const Form = ({
   children,

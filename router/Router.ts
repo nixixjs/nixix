@@ -1,13 +1,13 @@
-import { handleLocation } from "./handleLoc";
-import { nixixStore } from "../dom/index";
-import { getLink, isNull, pushState } from "./helpers";
-import { agnosticRouteObjects } from "./utils";
 import {
   AgnosticRouteMatch,
   AgnosticRouteObject,
   matchRoutes,
 } from "@remix-run/router";
-import { warn } from "../dom/helpers";
+import { nixixStore } from "../dom/index";
+import { warn } from "../shared";
+import { handleLocation } from "./handleLoc";
+import { getLink, isNull, pushState } from "./helpers";
+import { agnosticRouteObjects } from "./utils";
 
 export function transitionIfSupported(cb: CallableFunction) {
   // @ts-expect-error

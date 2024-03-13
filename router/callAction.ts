@@ -1,6 +1,6 @@
 import { matchRoutes } from "@remix-run/router";
-import { raise } from "../dom/helpers";
 import { callStore } from "../primitives";
+import { raise } from "../shared";
 import type { EmptyObject } from "../types";
 import { navigate } from "./Router";
 import { lastElement, len } from "./helpers";

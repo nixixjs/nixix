@@ -1,10 +1,11 @@
+import { AgnosticRouteObject } from "@remix-run/router";
 import { LiveFragment } from "../../live-fragment/types";
 import Nixix from "../../types/index";
 
-type RouteType = {
+type RouteObject = {
   element?: any;
   path?: `/${string}`;
-};
+} & AgnosticRouteObject;
 
 interface $$__NixixStore {
   commentForLF: boolean;
@@ -12,10 +13,10 @@ interface $$__NixixStore {
     errorRoute?: RouteType;
     provider?: LiveFragment;
     routeMatch?: {
-      route: RouteType;
+      route: RouteObject;
     };
     redirect?: string | null;
-    currentRoute?: RouteType;
+    currentRoute?: RouteObject;
   };
 }
 
