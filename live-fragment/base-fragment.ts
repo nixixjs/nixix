@@ -2,13 +2,12 @@ import { DOCUMENT_FRAGMENT_NODE } from './functions.js';
 
 export class BaseFragment implements TBaseFragment {
   constructor() {
-    let args = [].slice.call(arguments) as (typeof prev)[],
-      valid = false,
-      parent: Null<ParentNode> = null,
-      children: Null<Node[]> = null,
-      prev: Null<Node> = null,
-      next: Null<Node> = null,
-      node: Null<Node> = null;
+    let args = [].slice.call(arguments) as (typeof prev)[];
+    let parent: Null<ParentNode> = null;
+    let children: Null<Node[]> = null;
+    let prev: Null<Node> = null;
+    let next: Null<Node> = null;
+    let node: Null<Node> = null;
 
     if (args.length === 2) {
       prev = args[0];
@@ -22,10 +21,6 @@ export class BaseFragment implements TBaseFragment {
         while (node && node !== next) {
           children.push(node);
           node = node.nextSibling;
-        }
-
-        if (node === next) {
-          valid = true;
         }
       }
     }

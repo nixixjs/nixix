@@ -1,26 +1,13 @@
 import { Plugin as Plugin_2 } from 'vite';
 
-export declare const esbuildOptions: {
-  jsxFactory: 'Nixix.create';
-  jsxFragment: '"fragment"';
-  jsxImportSource: 'nixix';
-  jsxDev: false;
-  jsx: 'transform';
-  jsxInject: "import Nixix from 'nixix/dom';";
-  minifyIdentifiers: true;
+export type PluginOptions = {
+  projectRoot?: `${string}/${string}`;
+  dev?: boolean;
 };
 
-export declare const devEsbuildOptions: {
-  jsxFactory: 'Nixix.create';
-  jsxFragment: "'fragment'";
-  jsxImportSource: './index.js';
-  jsxInject: 'import Nixix from "dom"';
+export type ExtendedPluginOptions = PluginOptions & {
+  hmr?: boolean;
 };
 
-/**
- * This function for HMR in NixixJS is experimental
- */
-export default function NixixHMR(options: {
-  projectRoot?: `${string}/${string}`,
-  dev?: boolean
-}): Plugin_2[];
+export default function NixixPlugin({projectRoot, dev, hmr}: ExtendedPluginOptions): Plugin_2[]
+
