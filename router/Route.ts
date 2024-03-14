@@ -20,19 +20,6 @@ type AgnosticRouteProps = {
   loader?: LoaderFunction;
 };
 
-/**
- * For a specific route, an action function can be defined.
- * "/movies"
- * When a form is submitted to that route with data, we check if the action attr is a route match -> get the route match and get the action of the route, call it with props 
- * 
- * each `actionData` call should drop it's path to see if it matches with the routes in question.
- * 
- * path -> action `/movies/:id`
- * 
- * Form action=`/movies/new`
- * actionData(`/movies/new`);
- */
-
 export function configLoaderAndAction({ route: { path, loader, action } }: { route: AgnosticRouteObject }) {
   if (loader) LoaderHandler.setRouteLoader(path as PathToRoute)
   
@@ -80,7 +67,7 @@ type RoutesProps = {
 };
 export function Routes(props: RoutesProps) {
   if (!props) raise(`No props were passed to the Routes component`);
-  const { children, viewTransitions } = props;
+  const { children, viewTransitions = false } = props;
   nixixStore.viewTransitions = viewTransitions;
   const routes: RouteStoreType = {
     routeMatch: {} as any,

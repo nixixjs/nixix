@@ -1,3 +1,4 @@
+import { MemoStore, NonPrimitive, Signal } from "../../primitives/types";
 import {
   AnchorHTMLAttributes,
   Component,
@@ -7,7 +8,6 @@ import {
   NixixNode,
   RouteExoticComponent,
 } from "../../types";
-import { MemoStore } from "../../primitives/types";
 
 export interface LoaderProps {
   params: EmptyObject<string | undefined>;
@@ -96,19 +96,25 @@ declare const redirect: PathFunction<void>;
 
 declare const changeTitle: (title: string) => void;
 
+declare type RouteState<T extends NonPrimitive> = {
+  data: MemoStore<T>;
+  loading: Signal<boolean>;
+}
+
 declare function actionData<T extends any[] | object>(
   path: PathToRoute,
   value: T
 ): MemoStore<T>;
 
+/**
+ * Should be called inside a Component only once;
+ * @param path path which to get 
+ * @param value an object which is converted into a store for use.
+ */
+declare function loaderData<T extends EmptyObject>(path: PathToRoute, value: T): RouteState<T>
+
 export {
-  Link,
-  Routes,
-  Route,
-  Form,
-  Router,
-  navigate,
-  redirect,
-  changeTitle,
-  actionData,
+  Form, Link, Route, Router, Routes, actionData, changeTitle, loaderData, navigate,
+  redirect
 };
+

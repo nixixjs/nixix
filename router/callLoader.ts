@@ -18,7 +18,7 @@ export class LoaderHandler {
   
   static setRouteLoader(path: PathToRoute) {
     this.handlerMap.set(path, store<LoaderState>({
-      loading: false,
+      loading: true,
       data: {}
     }))
   }
