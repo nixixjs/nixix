@@ -1,6 +1,7 @@
 import { AgnosticRouteObject } from "@remix-run/router";
 import { nixixStore } from "../dom/index";
 import { raise, warn } from "../shared";
+import { ActionHandler } from "./callAction";
 import { LoaderHandler } from "./callLoader";
 import { RouteStoreType, createBrowserRouter } from "./createRoute";
 import {
@@ -22,8 +23,7 @@ type AgnosticRouteProps = {
 
 export function configLoaderAndAction({ route: { path, loader, action } }: { route: AgnosticRouteObject }) {
   if (loader) LoaderHandler.setRouteLoader(path as PathToRoute)
-  
-  // if (action) ActionDataHandler.addActionRoute(path as PathToRoute);
+  if (action) ActionHandler.setRouteAction(path as PathToRoute);
 }
 
 type BuildRouteConfig = {

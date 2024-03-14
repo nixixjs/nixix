@@ -100,7 +100,7 @@ export function memo<S extends NonPrimitive>(
  * const View = () => <div className={concat`${display} flex-col`} >I am a DIV</div>
  * ```
  */
-export function concat(...templ: Array<Primitive | Signal<Primitive> | TemplateStringsArray>): MemoSignal<string>;
+export function concat<T extends Primitive>(...templ: Array<T | Signal<T> | TemplateStringsArray>): MemoSignal<string>;
 
 /**
  * Places the callback function to be passed to it in aa stack, so signal values acessed within the callback can subscribe the callback to themselves.

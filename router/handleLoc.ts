@@ -30,9 +30,9 @@ export function switchRoutes({
         route.element = routePage;
       } else routePage = element;
       provider?.replace(createFragment(routePage));
-      const [loadingState, setLoadingState] =
+      const [loaderState, setLoaderState] =
         LoaderHandler.getLoaderState(route.path!)! || [];
-        setLoadingState?.({ ...loadingState, loading: true });
+        setLoaderState?.({ ...loaderState, loading: true });
       break;
   }
 }

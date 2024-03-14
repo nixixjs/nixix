@@ -1,79 +1,69 @@
-import { matchRoutes } from "@remix-run/router";
-import { callStore } from "../primitives";
+import { AgnosticIndexRouteObject, AgnosticRouteMatch, matchPath } from "@remix-run/router";
+import { NonPrimitive, Store, store } from "../primitives";
 import { raise } from "../shared";
 import type { EmptyObject } from "../types";
 import { navigate } from "./Router";
-import { lastElement, len } from "./helpers";
 import {
-  actionData as ActionDataFunction,
+  ActionFunction,
   ActionProps,
-  PathToRoute,
+  PathToRoute
 } from "./types/index";
-import { agnosticRouteObjects } from "./utils";
 
-export class ActionDataHandler {
-  private static actionRoute: Set<PathToRoute> = new Set();
+type ActionState = {
+  data: EmptyObject,
+  loading: boolean;
+}
 
-  private static pathMap: Map<PathToRoute, ((data: any) => void)> = new Map();
+export class ActionHandler {
+  static handlerMap = new Map<PathToRoute, ReturnType<typeof store<ActionState>>>()
 
-  static subscribeAction(path: PathToRoute, fn: (data: any) => void) {
-    this.pathMap.set(path, fn);
+  static setRouteAction(path: PathToRoute) {
+    this.handlerMap.set(path, store<ActionState>({
+      loading: true,
+      data: {}
+    }))
   }
 
-  static addActionRoute(path: PathToRoute) {
-    this.actionRoute.add(path);
+  static getActionState(path: PathToRoute) {
+    return this.handlerMap.get(path)
   }
 
-  static setData(path: PathToRoute, data: any[] | object) {
-    const { actionRoute } = this;
-    actionRoute.has(path)
-  }
 }
 
 type CallActionConfig = {
-  path: `/${string}`;
+  actionPath: `/${string}`
   formData: FormData;
+  routeMatch: AgnosticRouteMatch<string, AgnosticIndexRouteObject>
 };
 
-export async function callAction({ path, formData }: CallActionConfig) {
-  const routeMatches = matchRoutes(agnosticRouteObjects, {
-    pathname: path,
-  });
-
-  if (routeMatches && len(routeMatches) !== 0) {
-    const routeMatch = lastElement(routeMatches) as any;
-    const payLoad = {
-      params: routeMatch.params || {},
-      request: new Request(path),
-    } as ActionProps;
-    payLoad.request.formData = async () => formData;
-    // @ts-ignore
-    const { action, path: rPath } = routeMatch.route;
-    const data = (await action?.(payLoad)) as Promise<EmptyObject>;
-    // rPath -> /movies/:id
-    ActionDataHandler.setData(rPath, data);
-    return;
-  } else raise(`Specify a route action function for ${path}`);
+export async function callAction({ actionPath, formData, routeMatch }: CallActionConfig) {
+  const { params, route: { action } } = routeMatch  
+  const payLoad = {
+    params: params || {},
+    request: new Request(actionPath),
+  } as ActionProps;
+  payLoad.request.formData = async () => formData;
+  const [actionState, setActionState] = ActionHandler.getActionState(actionPath!)! || [];
+  setActionState?.({ ...actionState, loading: true });
+  navigate(actionPath);
+  (action as ActionFunction)?.(payLoad).then(data => {
+    setActionState?.({ data, loading: false });
+  })
 }
 
-export const actionData: typeof ActionDataFunction = (
-  path: PathToRoute,
-  value: any
-) => {
-  const routeMatches = matchRoutes(agnosticRouteObjects, {
-    pathname: path,
-  });
-
-  if (routeMatches && len(routeMatches) !== 0) {
-    const routeMatch = lastElement(routeMatches) as any;
-    const { action, path: rPath } = routeMatch
-    if (!action)
-      raise(`Specify an action function for ${rPath}`);
-    const [val, setVal] = callStore(value)!;
-    ActionDataHandler.subscribeAction(path, (data) => {
-      setVal(data);
-      navigate(path);
-    });
-    return val as any;
-  } else raise(`There are no route matches for ${path}.`);
-};
+export function actionData<T extends NonPrimitive>(path: `/${string}`, value: T) {
+  let state = null as unknown as Store<ActionState>;
+  ActionHandler.handlerMap.forEach(([loaderState, setLoaderState], key) => {
+    if (matchPath(key, path)) {
+      setLoaderState({
+        ...loaderState,
+        data: value
+      })
+      state = loaderState
+    }
+  })
+  if (state === null) {
+    raise(`No route actions were found for ${path}`)
+  }
+  return state;
+}

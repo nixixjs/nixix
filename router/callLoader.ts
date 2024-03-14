@@ -4,6 +4,7 @@ import {
   matchPath
 } from "@remix-run/router";
 import { Store, store, type NonPrimitive } from "../primitives";
+import { raise } from "../shared";
 import { EmptyObject } from "../types";
 import { getWinPath } from "./helpers";
 import type { LoaderFunction, LoaderProps, PathToRoute } from "./types/index";
@@ -58,5 +59,8 @@ export function loaderData<T extends NonPrimitive>(path: `/${string}`, value: T)
       state = loaderState
     }
   })
+  if (state === null) {
+    raise(`No route loaders were found for ${path}`)
+  }
   return state;
 }

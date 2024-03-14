@@ -49,7 +49,7 @@ export type FormActionProps = {
 } & FormHTMLAttributes<HTMLFormElement>;
 
 export type PathToRoute = `/${string}`;
-declare const Link: <T extends PathToRoute>(props: RouteLink<T>) => JSX.Element;
+declare const Link: <T extends Signal<string> | PathToRoute>(props: RouteLink<T>) => someView;
 declare const Routes: ExoticComponent<{
   children?: NixixNode;
   viewTransitions?: boolean;
@@ -79,42 +79,61 @@ type PathFunction<T> = (path: PathToRoute) => T;
 declare const navigate: PathFunction<void>;
 
 /**
- * To be used within a loader context to redirect to new pages
+ * To be used within a loader or action context to redirect to new pages
+ * Can be used to protect routes
+ * @example
  * ```jsx
  *  <Route
- *    path='/products'
- *    loader={async () => {
- *      // CAN BE USED TO PROTECTED ROUTES
- *     // DO SOME AUTHENTICATION HERE
- *     redirect('/sign-in')
+ *    path='/users/:id'
+ *    loader={async ({params}) => {
+ *      const user = fakeDb().get(params.user)
+ *      if (user === null) {
+ *        return redirect('/sign-in')
+ *      }
  *    }}
- *    element={<Products />}>
+ *    element={Users}>
  *  </Route>
  * ```
  */
-declare const redirect: PathFunction<void>;
+declare const redirect: PathFunction<{}>;
 
 declare const changeTitle: (title: string) => void;
 
 declare type RouteState<T extends NonPrimitive> = {
   data: MemoStore<T>;
   loading: Signal<boolean>;
-}
-
-declare function actionData<T extends any[] | object>(
-  path: PathToRoute,
-  value: T
-): MemoStore<T>;
+};
 
 /**
  * Should be called inside a Component only once;
- * @param path path which to get 
+ * @param path path which to get
  * @param value an object which is converted into a store for use.
  */
-declare function loaderData<T extends EmptyObject>(path: PathToRoute, value: T): RouteState<T>
+declare function actionData<T extends EmptyObject>(
+  path: PathToRoute,
+  value: T
+): RouteState<T>;
+
+/**
+ * Should be called inside a Component only once;
+ * @param path path which to get
+ * @param value an object which is converted into a store for use.
+ */
+declare function loaderData<T extends EmptyObject>(
+  path: PathToRoute,
+  value: T
+): RouteState<T>;
 
 export {
-  Form, Link, Route, Router, Routes, actionData, changeTitle, loaderData, navigate,
+  Form,
+  Link,
+  Route,
+  Router,
+  Routes,
+  actionData,
+  changeTitle,
+  loaderData,
+  navigate,
   redirect
 };
 
