@@ -10,8 +10,9 @@ declare global {
   type target =
     | keyof HTMLElementTagNameMap
     | keyof SVGElementTagNameMap
+    | 'fragment'
     | ((props?: {} | null) => Element)
-    | 'fragment';
+    | CallableFunction;
   type Proptype = { children?: any; [index: string]: any } | null | undefined;
 
   type ChildrenType = Array<Element | string | Signal>;

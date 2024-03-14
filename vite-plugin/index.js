@@ -1,14 +1,23 @@
+// @ts-check
 import { join, normalize } from "path";
 
 /**
- * 
- * @param { {
- * projectRoot?: `${string}/${string}`,
- * dev?: boolean
- * }} options 
- * @returns 
+ * @typedef {import('vite').Plugin} Plugin_2
+ * @typedef {import('vite').ESBuildOptions} ESBuildOptions
+ * @typedef {import('./types.d.ts').PluginOptions} PluginOptions 
+ * @typedef {import('./types.d.ts').ExtendedPluginOptions} ExtendedPluginOptions
  */
-export default function NixixHMR({projectRoot, dev} = { dev: false }) {
+
+/**
+ * 
+ * @param {PluginOptions} options 
+ * @returns {Plugin_2}
+ */
+function NixixHMR({projectRoot, dev} = { dev: false }) {
+
+  /**
+   * @type {Plugin_2}
+   */
   const hmrplugin = {
     name: "nixix-vite-hmr",
     apply: "serve",
@@ -37,26 +46,68 @@ export default function NixixHMR({projectRoot, dev} = { dev: false }) {
     },
   };
 
-  return [hmrplugin];
+  return hmrplugin;
 }
 
-const esbuildOptions = {
-  jsxFactory: "$Nixix.create",
-  jsxFragment: '"fragment"',
-  jsxImportSource: "nixix",
-  jsxDev: false,
-  jsx: "transform",
-  jsxInject: "import $Nixix, { nixixStore as $nixixStore } from 'nixix/dom';",
-  minifyIdentifiers: true,
-};
+/**
+ * 
+ * @param {PluginOptions} options 
+ * @returns {Plugin_2}
+ */
+function NixixEsbuildConfig({dev} = { dev: false }) {
+  
+  /**
+   * @type {ESBuildOptions}
+   */
+  const baseEsbuildOptions = {
+    jsxFactory: "$Nixix.create",
+    jsxFragment: "'fragment'",
+    jsxDev: false,
+    jsx: "transform",
+  }
 
-const devEsbuildOptions = {
-  jsxDev: false,
-  jsx: "transform",
-  jsxFactory: "$Nixix.create",
-  jsxFragment: "'fragment'",
-  jsxImportSource: "./index.js",
-  jsxInject: 'import $Nixix, { nixixStore as $nixixStore } from "dom"',
-};
+  /**
+   * @type {ESBuildOptions}
+   */
+  const esbuildOptions = {
+    ...baseEsbuildOptions,
+    ...(dev ? {
+      jsxImportSource: "./index.js",
+      jsxInject: 'import $Nixix, { nixixStore as $nixixStore } from "dom"',
+    } : {
+      jsxImportSource: "nixix",
+      jsxInject: "import $Nixix, { nixixStore as $nixixStore } from 'nixix/dom';",
+      minifyIdentifiers: true,
+    })
+  }
+  
+  /**
+   * @type {Plugin_2}
+   */
+  const configPlugin = {
+    name: "nixix-vite-config",
+    config: (userConfig) => {
+      userConfig.esbuild = {
+        ...userConfig.esbuild,
+        ...esbuildOptions
+      }
+    }
+  };
 
-export { devEsbuildOptions, esbuildOptions };
+  return configPlugin;
+}
+
+/**
+ * 
+ * @param {ExtendedPluginOptions} options 
+* @returns {Plugin_2[]}
+*/
+export default function NixixPlugin({projectRoot, dev, hmr} = { projectRoot: 'src/index.tsx', dev: false, hmr: false }) {
+  /**
+   * @type {Plugin_2[]}
+   */
+  const plugins = [NixixEsbuildConfig({dev})]
+  hmr && plugins.push(NixixHMR({projectRoot, dev}))
+  return plugins
+}
+

@@ -1,19 +1,17 @@
-import { raise, warn } from "../dom/helpers";
+import { AgnosticRouteObject } from "@remix-run/router";
+import { nixixStore } from "../dom/index";
+import { raise, warn } from "../shared";
+import { ActionHandler } from "./callAction";
+import { LoaderHandler } from "./callLoader";
 import { RouteStoreType, createBrowserRouter } from "./createRoute";
 import {
   forEach,
-  getWinPath,
   isNull,
   startsWithSlash,
-  trimTrailingSlash,
+  trimTrailingSlash
 } from "./helpers";
+import type { ActionFunction, LoaderFunction, PathToRoute } from "./types/index";
 import { agnosticRouteObjects } from "./utils";
-import { navigate } from "./Router";
-import type { LoaderFunction, ActionFunction } from "./types/index";
-import type { EmptyObject } from "../types";
-import { callStore } from "../primitives";
-import { nixixStore } from "../dom/index";
-import { ActionDataHandler } from "./callAction";
 
 type AgnosticRouteProps = {
   element: JSX.Element;
@@ -23,25 +21,9 @@ type AgnosticRouteProps = {
   loader?: LoaderFunction;
 };
 
-/**
- * For a specific route, an action function can be defined.
- * "/movies"
- * When a form is submitted to that route with data, we check if the action attr is a route match -> get the route match and get the action of the route, call it with props 
- * 
- * each `actionData` call should drop it's path to see if it matches with the routes in question.
- * 
- * path -> action `/movies/:id`
- * 
- * Form action=`/movies/new`
- * actionData(`/movies/new`);
- */
-
-export function popHandler() {
-  navigate(getWinPath() as `/${string}`);
-}
-
-export function configLoaderAndAction({ route }: { route: EmptyObject }) {
-  route.action && ActionDataHandler.addActionRoute(route.path);
+export function configLoaderAndAction({ route: { path, loader, action } }: { route: AgnosticRouteObject }) {
+  if (loader) LoaderHandler.setRouteLoader(path as PathToRoute)
+  if (action) ActionHandler.setRouteAction(path as PathToRoute);
 }
 
 type BuildRouteConfig = {
@@ -69,7 +51,7 @@ export function buildRoutes(config: BuildRouteConfig) {
     configLoaderAndAction({ route });
     isNull(child.errorRoute) === false &&
       (config.routes!["errorRoute"] = route as any);
-    agnosticRouteObjects.push(route);
+    agnosticRouteObjects.push(route as any);
     child.children &&
       buildRoutes({
         routes,
@@ -85,7 +67,7 @@ type RoutesProps = {
 };
 export function Routes(props: RoutesProps) {
   if (!props) raise(`No props were passed to the Routes component`);
-  const { children, viewTransitions } = props;
+  const { children, viewTransitions = false } = props;
   nixixStore.viewTransitions = viewTransitions;
   const routes: RouteStoreType = {
     routeMatch: {} as any,

@@ -1,27 +1,21 @@
-import { createFragment } from "../dom/helpers";
 import { nixixStore } from "../dom";
-import type { EmptyObject } from "../types";
-import { callLoader } from "./callLoader";
-import { navigate } from "./Router";
-import { isFunction } from "../shared";
+import { createFragment } from "../dom/helpers";
 import { buildComponent } from "../dom/index";
+import { isFunction } from "../shared";
+import { LoaderHandler, callLoader } from "./callLoader";
 
 export function handleLocation() {
   const {
     $$__routeStore: { provider, routeMatch },
   } = nixixStore as Required<typeof nixixStore>;
-  callLoader(routeMatch!).then((data) => {
-    const { redirect } = nixixStore.$$__routeStore!;
-    // if redirect, stop executing and navigate again;
-    if (typeof redirect === "string") {
-      nixixStore.$$__routeStore!.redirect = null;
-      return navigate(redirect as `/${string}`);
-    }
-    switchRoutes({ provider, routeMatch, loaderData: data });
-  });
+  switchRoutes({ provider, routeMatch });
+  callLoader(routeMatch!)
 }
 
-export function switchRoutes({ provider, routeMatch, loaderData }: EmptyObject) {
+export function switchRoutes({
+  provider,
+  routeMatch,
+}: Required<typeof nixixStore>["$$__routeStore"]) {
   const route = routeMatch!.route;
   const element = route.element;
   switch (element) {
@@ -31,12 +25,14 @@ export function switchRoutes({ provider, routeMatch, loaderData }: EmptyObject) 
     default:
       nixixStore.$$__routeStore!.currentRoute! = route;
       let routePage: any;
-      
       if (isFunction(element)) {
         routePage = buildComponent(element, {}, []);
-        route.element = routePage
+        route.element = routePage;
       } else routePage = element;
       provider?.replace(createFragment(routePage));
+      const [loaderState, setLoaderState] =
+        LoaderHandler.getLoaderState(route.path!)! || [];
+        setLoaderState?.({ ...loaderState, loading: true });
       break;
   }
 }
