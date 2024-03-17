@@ -9,6 +9,7 @@ import { agnosticRouteObjects } from "./utils";
 export const Form = ({
   children,
   "on:submit": onSubmit,
+  "bind:isSubmitting": bindIsSubmitting,
   ...rest
 }: FormActionProps) => {
   let path = `${rest.action}` as `/${string}`;
@@ -26,7 +27,7 @@ export const Form = ({
       onSubmit?.(e);
       const formData = new FormData(e.currentTarget);
       path = `${rest.action}`
-      callAction({ actionPath: path, formData, routeMatch });
+      callAction({ actionPath: path, status: bindIsSubmitting, formData, routeMatch });
     };
     return create(
       "form",

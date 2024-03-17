@@ -46,6 +46,7 @@ export interface RouteConfig<T extends string> {
 export type FormActionProps = {
   action: `/${string}`;
   method: "put" | "post" | "delete" | "patch";
+  "bind:isSubmitting"?: Signal<boolean>
 } & FormHTMLAttributes<HTMLFormElement>;
 
 export type PathToRoute = `/${string}`;
@@ -99,10 +100,15 @@ declare const redirect: PathFunction<{}>;
 
 declare const changeTitle: (title: string) => void;
 
-declare type RouteState<T extends NonPrimitive> = {
+declare type LoaderState<T extends NonPrimitive> = {
   data: MemoStore<T>;
   loading: Signal<boolean>;
 };
+
+declare type ActionState<T extends NonPrimitive> = {
+  data: MemoStore<T>;
+  error: Signal<string | null>;
+}
 
 /**
  * Should be called inside a Component only once;
@@ -112,7 +118,7 @@ declare type RouteState<T extends NonPrimitive> = {
 declare function actionData<T extends EmptyObject>(
   path: PathToRoute,
   value: T
-): RouteState<T>;
+): ActionState<T>
 
 /**
  * Should be called inside a Component only once;
@@ -122,7 +128,7 @@ declare function actionData<T extends EmptyObject>(
 declare function loaderData<T extends EmptyObject>(
   path: PathToRoute,
   value: T
-): RouteState<T>;
+): LoaderState<T>;
 
 export {
   Form,
