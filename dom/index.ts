@@ -193,7 +193,7 @@ function buildComponent(
   if (isFunction(tagNameFC)) {
     const artificialProps = props || {};
     Boolean(children?.length) && (artificialProps.children = children);
-    if (Object.getPrototypeOf(tagNameFC) === Component) {
+    if (tagNameFC.prototype instanceof Component) {
       const componentObject = new (tagNameFC as any)(
         artificialProps
       ) as Component;
