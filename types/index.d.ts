@@ -36,6 +36,8 @@ declare namespace Nixix {
     children?: T;
   };
 
+  type FC<P = {}> = (() => someView | Promise<someView>) | ((props: P) => someView | Promise<someView>);
+
   class Component {
     constructor(props?: {});
 
@@ -52,7 +54,7 @@ declare namespace Nixix {
     /**
      * This function is used to render the jsx
      */
-    jsx(): someView;
+    jsx(): someView | Promise<someView>;
   }
 
   /**
