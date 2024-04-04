@@ -1,10 +1,13 @@
-import { Primitive } from "../primitives/types";
 import { createFragment } from "../dom/helpers";
+import { Signal } from "../primitives/types";
 import type {
   ButtonHTMLAttributes,
+  FC,
   FormHTMLAttributes,
   HTMLAttributes,
   InputHTMLAttributes,
+  LiHTMLAttributes,
+  OlHTMLAttributes,
   TextareaHTMLAttributes,
 } from "../types/index";
 import type { BaseViewComponent, ViewComponent } from "./types/index";
@@ -12,7 +15,7 @@ import type { BaseViewComponent, ViewComponent } from "./types/index";
 /**
  * Returns a section that is a flexible box when NixixJS is used with TailwindCSS
  */
-export const HStack = ({ children, className, ...rest }: BaseViewComponent = {}): someView => {
+export const HStack: FC<BaseViewComponent> = ({ children, className, ...rest }): someView => {
   return (
     <section
       {...rest}
@@ -26,7 +29,7 @@ export const HStack = ({ children, className, ...rest }: BaseViewComponent = {})
 /**
  * Returns a stack that has its children aligned vertically - column
  */
-export const VStack = ({children, ...rest}: BaseViewComponent = {}): someView => {
+export const VStack: FC<BaseViewComponent> = ({children, ...rest}): someView => {
   return (
     <section
       {...rest}>
@@ -38,14 +41,14 @@ export const VStack = ({children, ...rest}: BaseViewComponent = {}): someView =>
 /**
  * Returns an article element
  */
-export const Article = ({ children, ...rest }: BaseViewComponent = {}): someView => {
+export const Article: FC<BaseViewComponent> = ({ children, ...rest }): someView => {
   return <article {...rest}>{children}</article>;
 };
 
 /**
  * Returns an aside element
  */
-export const Aside = ({children, ...rest}: BaseViewComponent = {}): someView => {
+export const Aside: FC<BaseViewComponent> = ({children, ...rest}): someView => {
   return (
     <aside
       {...rest}>
@@ -57,8 +60,8 @@ export const Aside = ({children, ...rest}: BaseViewComponent = {}): someView => 
 /**
  * Returns a form element
  */
-export const FormField = (
-  {children, ...rest}: ViewComponent<FormHTMLAttributes<HTMLFormElement>> = {}
+export const FormField: FC<ViewComponent<FormHTMLAttributes<HTMLFormElement>>> = (
+  {children, ...rest}
 ): someView => {
   return <form {...rest}>{children}</form>;
 };
@@ -66,8 +69,8 @@ export const FormField = (
 /**
  * Returns an input element
  */
-export const TextField = (
-  props: Omit<ViewComponent<InputHTMLAttributes<HTMLInputElement>>, 'children'> = {}
+export const TextField: FC<Omit<ViewComponent<InputHTMLAttributes<HTMLInputElement>>, 'children'>> = (
+  props
 ): someView => {
   return (
     <input
@@ -82,8 +85,8 @@ export const TextField = (
 /**
  * Returns a textarea element
  */
-export const TextArea = (
-  {children, ...rest}: ViewComponent<TextareaHTMLAttributes<HTMLTextAreaElement>> = {}
+export const TextArea: FC<ViewComponent<TextareaHTMLAttributes<HTMLTextAreaElement>>> = (
+  {children, ...rest}
 ): someView => {
   return (
     <textarea
@@ -98,8 +101,8 @@ export const TextArea = (
 /**
  * Returns a button element
  */
-export const Button = (
-  {children, ...rest}: ViewComponent<ButtonHTMLAttributes<HTMLButtonElement>> = {}
+export const Button: FC<ViewComponent<ButtonHTMLAttributes<HTMLButtonElement>>> = (
+  {children, ...rest}
 ): someView => {
   return (
     <button
@@ -113,18 +116,17 @@ export const Button = (
 /**
  * Returns a paragragh
  */
-export const Paragragh = (
-  {children, ...rest}: ViewComponent<HTMLAttributes<HTMLParagraphElement>> = {}
+export const Paragragh: FC<ViewComponent<HTMLAttributes<HTMLParagraphElement>>> = (
+  {children, ...rest}
 ): someView => {
-
   return <p {...rest}>{children}</p>;
 };
 
 /**
  * Returns a div element
  */
-export const Container = (
-  {children, ...rest}: ViewComponent<HTMLAttributes<HTMLDivElement>> = {}
+export const Container: FC<ViewComponent<HTMLAttributes<HTMLDivElement>>> = (
+  {children, ...rest}
 ): someView => {
   return <div {...rest}>{children}</div>;
 };
@@ -135,25 +137,38 @@ type HeadingProps = ViewComponent<HTMLAttributes<HTMLHeadingElement>> & {
 /**
  * Returns an h1, h2, h3 heading element with prop passed else returns a h1 tag.
  */
-export const Heading = ({children, type: Type = 'h1', ...rest}: HeadingProps): someView => {
+export const Heading: FC<HeadingProps> = ({children, type: Type = 'h1', ...rest}): someView => {
   return (<Type {...rest}>{children}</Type>);
 };
 
 /**
  * Returns a main element
  */
-export const Main = ({children, ...rest}: BaseViewComponent = {}): someView => {
+export const Main: FC<BaseViewComponent> = ({children, ...rest}): someView => {
   return <main {...rest}>{children}</main>;
 };
 
-type TextNodeProps<T = Primitive> = {
-  children?: T[];
+type TextNodeProps<T = string | Signal<string>> = {
+  children?: T;
 };
 /**
  * Returns a textnode
  */
-export const TextNode = ({children}: TextNodeProps = {}): someView => {
+export const TextNode: FC<TextNodeProps> = ({children}): someView => {
   return children ? createFragment(children) : [];
 };
+
+type ListProps = {
+  type?: 'unordered' | 'ordered'
+} & ViewComponent<HTMLAttributes<HTMLUListElement> | OlHTMLAttributes<HTMLOListElement>>;
+
+export const List: FC<ListProps> = ({children, type, ...rest}): someView => {
+  const Listtype = ((type || 'unordered') === 'unordered') ? 'ul' : 'ol'
+  return <Listtype {...rest as any} >{children}</Listtype> 
+}
+
+export const ListItem: FC<LiHTMLAttributes<HTMLLIElement>> = ({children, ...rest}): someView => {
+  return <li {...rest} >{children}</li> 
+}
 
 export { BaseViewComponent, ViewComponent };
