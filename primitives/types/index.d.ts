@@ -77,6 +77,13 @@ export function getSignalValue<S extends Primitive>(value: Signal<S>): S;
 type Deps = (Signal<Primitive> | Store<NonPrimitive>)[];
 
 /**
+ * A signal's value should be accessed within this function.
+ */
+interface EffectCallback {
+  (): void
+}
+
+/**
  * Creates a read-only signal or store which depends on other signals or stores.
  *
  * @param fn callback function to return the initialValue
@@ -85,9 +92,11 @@ type Deps = (Signal<Primitive> | Store<NonPrimitive>)[];
  */
 export function memo<S extends Primitive>(
   fn: () => S,
+  deps: Deps
 ): MemoSignal<S>;
 export function memo<S extends NonPrimitive>(
   fn: () => S,
+  deps: Deps
 ): MemoStore<S>;
 
 /**
@@ -116,7 +125,7 @@ export function concat<T extends Primitive>(...templ: Array<T | Signal<T> | Temp
  * ```
  */
 export function effect(
-  callbackFn: CallableFunction,
+  fn: EffectCallback,
 ): void;
 
 export const callEffect: typeof effect
@@ -134,12 +143,12 @@ export const callEffect: typeof effect
  * }, [count])
  * ```
  */
-export function callReaction(callbackFn: CallableFunction, deps: Deps): void;
+export function callReaction(fn: EffectCallback, deps: Deps): void;
 
 export const reaction: typeof callReaction
 
 export function renderEffect(
-  callbackFn: CallableFunction,
+  fn: EffectCallback,
 ): void;
 
 /**
@@ -150,7 +159,7 @@ export function removeSignal(
   signals: Array<Store<any> | Signal<any>> | Store<any> | Signal<any>
 ): void;
 
-export function removeEffect(fn: CallableFunction, signal: Deps[number]): void;
+export function removeEffect(fn: EffectCallback, signal: Deps[number]): void;
 
 /**
  * @example

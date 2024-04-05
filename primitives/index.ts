@@ -1,5 +1,5 @@
 import { getSignalValue } from "../dom/helpers";
-import { DEPS, isFunction, raise, forEach } from "../shared";
+import { DEPS, forEach, isFunction, raise } from "../shared";
 import { Signal, Store } from "./classes";
 import {
   ReactivityScope,
@@ -63,7 +63,9 @@ function callStore<S extends NonPrimitive>(
   );
   const initValue = new Store({ value });
   const setter = (newValue: (prev?: any) => any) => {
-    let newValuePassed = isFunction(newValue) ? newValue(cloneObject(value)) : newValue;
+    let newValuePassed = isFunction(newValue)
+      ? newValue(cloneObject(value))
+      : newValue;
     switch (true) {
       case config?.equals:
       default:
@@ -144,27 +146,21 @@ function callReaction(callbackFn: CallableFunction, deps?: (Signal | Store)[]) {
   subscribeDeps(callbackFn, deps);
 }
 
-function renderEffect(
-  callbackFn: CallableFunction,
-  furtherDependents?: (Signal | Store)[]
-) {
-  window.addEventListener(
-    "DOMContentLoaded",
-    function rendered() {
+function renderEffect(callbackFn: CallableFunction) {
+  () => {
+    try {
+      EFFECT_STACK.push(callbackFn);
       callbackFn();
-    },
-    {
-      once: true,
+    } finally {
+      EFFECT_STACK.pop();
     }
-  );
-  subscribeDeps(callbackFn, furtherDependents);
+  };
 }
 
 // This is only for simplicity
 const signal = callSignal;
 
 const store = callStore;
-
 
 const effect = callEffect;
 
@@ -179,13 +175,14 @@ export {
   callSignal,
   callStore,
   concat,
+  effect,
   getSignalValue,
   getValueType,
   memo,
-  renderEffect,
-  splitProps,
-  signal,
-  effect,
   reaction,
-  store,
+  renderEffect,
+  signal,
+  splitProps,
+  store
 };
+
