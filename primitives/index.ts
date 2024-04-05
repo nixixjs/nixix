@@ -147,14 +147,12 @@ function callReaction(callbackFn: CallableFunction, deps?: (Signal | Store)[]) {
 }
 
 function renderEffect(callbackFn: CallableFunction) {
-  () => {
-    try {
-      EFFECT_STACK.push(callbackFn);
-      callbackFn();
-    } finally {
-      EFFECT_STACK.pop();
-    }
-  };
+  try {
+    EFFECT_STACK.push(callbackFn);
+    callbackFn();
+  } finally {
+    EFFECT_STACK.pop();
+  }
 }
 
 // This is only for simplicity
