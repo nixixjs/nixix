@@ -1,3 +1,4 @@
+import { EffectCallback } from 'primitives/types';
 import {
   Signal,
   Store,
@@ -71,7 +72,7 @@ declare global {
   }
 
   interface ShowProps {
-    when: () => boolean;
+    when: EffectCallback<boolean>;
     children: any;
     fallback: any;
     switch: Signal

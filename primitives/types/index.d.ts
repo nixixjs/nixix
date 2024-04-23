@@ -79,8 +79,8 @@ type Deps = (Signal<Primitive> | Store<NonPrimitive>)[];
 /**
  * A signal's value should be accessed within this function.
  */
-interface EffectCallback {
-  (): void
+interface EffectCallback<R = void> {
+  (): R;
 }
 
 /**

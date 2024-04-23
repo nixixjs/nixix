@@ -1,37 +1,45 @@
 import { createFragment } from "../dom/helpers";
 import { LiveFragment } from "../live-fragment";
-import { callReaction } from "../primitives";
-import { getShow, createBoundary, compFallback } from "./helpers";
+import { renderEffect } from "../primitives";
+import { compFallback, createBoundary, getShow } from "./helpers";
 
-export function Show(props: ShowProps) {
-  let { children, when, switch: signalSwitch, fallback } = props;
+// first is that we want to call the when callback and then check what we should render.
+
+export function Show(props: ShowProps): DocumentFragment {
+  let { children, when, fallback } = props;
   fallback = createFragment(fallback || (compFallback() as any));
   children = createFragment(children);
-  let bool: boolean | null = when();
-  const show = getShow(bool!, children, fallback);
-  const commentBoundary = createBoundary(createFragment(show), "show");
-  let liveFragment: LiveFragment = new LiveFragment(
-    commentBoundary.firstChild!,
-    commentBoundary.lastChild!
-  );
+  let bool: boolean | null = null;
+  let commentBoundary: DocumentFragment | null = null;
+  let liveFragment: LiveFragment | null = null;
 
-  callReaction(function ShowEff() {
-    const newBool = when();
-    switch (newBool) {
-      case true:
-        if (bool === true) return;
-        fallback = liveFragment.childNodes;
-        liveFragment.replace(createFragment(children));
-        bool = newBool;
-        break;
-      case false:
-        if (bool === false) return;
-        children = liveFragment.childNodes;
-        liveFragment.replace(createFragment(fallback));
-        bool = newBool;
-        break;
+  renderEffect(function ShowEff() {
+    const nextBool = when();
+    if (bool === null) {
+      // first time checking here;
+      bool = nextBool;
+      commentBoundary = createBoundary(getShow(nextBool!, children, fallback), "show");
+      liveFragment = new LiveFragment(
+        commentBoundary.firstChild!,
+        commentBoundary.lastChild!
+      );
+    } else {
+      // subsequent times here
+      if (nextBool === bool) return;
+      switch (nextBool) {
+        case true:
+          fallback = liveFragment!.childNodes;
+          liveFragment!.replace(createFragment(children));
+          bool = nextBool;
+          break;
+        case false:
+          children = liveFragment!.childNodes;
+          liveFragment!.replace(createFragment(fallback));
+          bool = nextBool;
+          break;
+      }
     }
-  }, [signalSwitch]);
+  });
 
-  return commentBoundary;
+  return commentBoundary!;
 }
