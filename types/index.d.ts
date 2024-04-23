@@ -36,7 +36,9 @@ declare namespace Nixix {
     children?: T;
   };
 
-  type FC<P = {}> = (() => someView | Promise<someView>) | ((props: P) => someView | Promise<someView>);
+  type FC<P = {}> = (() => someView | Promise<someView>) | ((props: P & JSX.IntrinsicAttributes) => someView | Promise<someView>);
+
+  type FCWithChildren<P = {}> = FC<{children: NixixNode; } & P>
 
   class Component {
     constructor(props?: {});
@@ -1358,7 +1360,7 @@ declare global {
     }
 
     interface IntrinsicAttributes {
-      key?: number;
+      key?: number | string;
     }
 
     interface HTMLElementTags {
