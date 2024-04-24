@@ -1,11 +1,11 @@
+import { EffectCallback, Signal, Store } from '../../primitives/types';
 import {
   ExoticComponent,
   ImgHTMLAttributes,
   type NixixNode,
 } from '../../types/index';
-import { Signal, Store } from '../../primitives/types';
 
-interface ComponentFallback {
+interface ComponentWithFallback {
   fallback?: someView | null | undefined;
 }
 
@@ -14,7 +14,7 @@ interface ComponentFallback {
  */
 export const Img: ExoticComponent<ImgHTMLAttributes<HTMLImageElement>>;
 
-interface SuspenseProps extends ComponentFallback {
+interface SuspenseProps extends ComponentWithFallback {
   onError?: NixixNode;
   children: Promise<someView> | someView;
 }
@@ -75,7 +75,7 @@ type AsyncComponent<T extends Props> = (
  */
 export const asyncComponent: AsyncComponent<Props>;
 
-interface ForProps<T extends Store<any[]>> extends ComponentFallback {
+interface ForProps<T extends Store<any[]>> extends ComponentWithFallback {
   each: T;
   children: (item: T[number], i: number) => someView;
 }
@@ -93,9 +93,12 @@ export declare function For<T extends any[]>(props?: ForProps<T>): someView;
  */
 export declare function Index<T extends any[]>(props?: IndexProps<T>): someView; 
 
-interface ShowProps<T> extends ComponentFallback {
-  when: () => boolean;
-  switch: T;
+interface ShowProps<T> extends ComponentWithFallback {
+  when: EffectCallback<boolean>;
+  /**
+   * @deprecated just access a signals value in the when callback
+   */
+  switch?: T;
   children: NixixNode;
 }
 

@@ -46,7 +46,7 @@ export interface RouteConfig<T extends string> {
 export type FormActionProps = {
   action: `/${string}`;
   method: "put" | "post" | "delete" | "patch";
-  "bind:isSubmitting"?: Signal<boolean>
+  isSubmitting?: Signal<boolean>
 } & FormHTMLAttributes<HTMLFormElement>;
 
 export type PathToRoute = `/${string}`;
