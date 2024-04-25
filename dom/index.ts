@@ -206,13 +206,7 @@ function buildComponent(
             `<${(tagNameFC as any).name}> Class Component`
         );
       }
-    } else {
-      try {
-        returnedElement = (tagNameFC as Function)(artificialProps);
-      } catch (error) {
-        throw new Error(error as any);
-      }
-    }
+    } else returnedElement = (tagNameFC as Function)(artificialProps);
   }
   return returnedElement;
 }
@@ -257,16 +251,6 @@ const Nixix = {
     return returnedElement;
   },
   handleDirectives: handleDirectives_,
-  handleDynamicAttrs: ({
-    element,
-    attrPrefix,
-    attrName,
-    attrValue,
-  }: DynamicAttrType) => {
-    const attrSuffix = attrName.slice(attrPrefix.length);
-    const newAttrName = `${attrPrefix.replace(":", "-")}${attrSuffix}`;
-    setAttribute(element, newAttrName, attrValue);
-  },
 };
 
 const create = Nixix.create;

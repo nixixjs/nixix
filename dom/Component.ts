@@ -1,6 +1,6 @@
 import { getValueType } from "../primitives/index";
 
-class Component {
+export default class Component {
   static State<S>(value: S) {
     const [val, setValue] = getValueType(value)!;
     return {
@@ -14,11 +14,6 @@ class Component {
   }
 }
 
-/**
- * Return a descriptor removing the value and returning a getter
- * The getter will return a .bind version of the function
- * and memoize the result against a symbol on the instance
- */
 export const bind: MethodDecorator = (target, key, descriptor) => {
   let fn = descriptor.value;
 
@@ -66,5 +61,3 @@ export const bind: MethodDecorator = (target, key, descriptor) => {
     },
   };
 };
-
-export default Component;
