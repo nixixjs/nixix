@@ -1,9 +1,11 @@
 node_modules/
 src/
+dist/
 .vscode
 *.sh
 *.ps1
 out.js
 *.html
 vite.config.js
+vite.config.ts
 package.schema.json

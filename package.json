@@ -8,6 +8,7 @@
   "types": "./types/index.d.ts",
   "scripts": {
     "dev": "vite",
+    "build": "vite build",
     "check": "tsc"
   },
   "keywords": [
