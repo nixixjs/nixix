@@ -30,12 +30,13 @@ function NixixHMR({projectRoot, dev} = { dev: false }) {
       const regExp = normalize(id).includes(path);
       if (regExp) {
         const prelude = `if (import.meta.hot) {
-          import.meta.hot?.accept((newMod) => {
+          import.meta.hot?.accept()
+          import.meta.hot?.dispose(() => {
             delete $nixixStore['$$__routeStore']
-            $agnosticRouteObjects.length = 0;
-            ($nixixStore?.root)?.replaceChildren?.("");
-            newMod?.default?.();
-          });
+            if ($agnosticRouteObjects.length) $agnosticRouteObjects.length = 0;
+            ($nixixStore as any).root?.replaceChildren();
+            ($nixixStore as any).reactiveScope = true;
+          })
         };
         import { agnosticRouteObjects as $agnosticRouteObjects } from "${dev ? 'router/utils' : 'nixix/router/utils'}";
         `;

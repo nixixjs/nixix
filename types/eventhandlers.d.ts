@@ -14,7 +14,7 @@ type Booleanish = boolean | "true" | "false";
 
 interface BaseSyntheticEvent<E = object, C = any, T = any> {
   nativeEvent: E;
-  currentTarget: C;
+  currentTarget: C | null;
   target: T;
   bubbles: boolean;
   cancelable: boolean;
@@ -31,7 +31,7 @@ interface BaseSyntheticEvent<E = object, C = any, T = any> {
 }
 
 export interface SyntheticEvent<T = Element, E = Event>
-  extends BaseSyntheticEvent<E, EventTarget & T, EventTarget> {}
+  extends BaseSyntheticEvent<E, EventTarget & T, EventTarget | T> {}
 
 interface ClipboardEvent<T = Element>
   extends SyntheticEvent<T, NativeClipboardEvent> {
