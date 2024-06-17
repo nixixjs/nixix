@@ -33,9 +33,11 @@ function NixixHMR({projectRoot, dev} = { dev: false }) {
           import.meta.hot?.accept()
           import.meta.hot?.dispose(() => {
             delete $nixixStore['$$__routeStore']
-            if ($agnosticRouteObjects.length) $agnosticRouteObjects.length = 0;
-            ($nixixStore as any).root?.replaceChildren();
-            ($nixixStore as any).reactiveScope = true;
+            if ($agnosticRouteObjects.length) {
+              $agnosticRouteObjects.length = 0;
+            }
+            $nixixStore.root?.replaceChildren();
+            $nixixStore.reactiveScope = true;
           })
         };
         import { agnosticRouteObjects as $agnosticRouteObjects } from "${dev ? 'router/utils' : 'nixix/router/utils'}";
