@@ -32,7 +32,7 @@ export function switchRoutes({
       provider?.replace(createFragment(routePage));
       const [loaderState, setLoaderState] =
         LoaderHandler.getLoaderState(route.path!)! || [];
-        setLoaderState?.({ ...loaderState, loading: true });
+      setLoaderState?.({ ...loaderState, loading: true });
       break;
   }
 }
