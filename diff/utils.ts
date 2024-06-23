@@ -1,8 +1,4 @@
 // @ts-nocheck
-import { isFunction, raise } from "../shared";
-import { isPrimitive } from "../primitives/helpers";
-import { Store } from "../primitives/classes";
-
 const instanceOf = (instance) => (x) => x instanceof instance;
 
 const isNumber = (x) => typeof x === 'number';

@@ -9,11 +9,11 @@ export const DELETEDPROPMAP = Symbol.for('deletedPropMap');
 export const TOPRIMITIVE = Symbol.toPrimitive;
 
 export function raise(message: string) {
-  throw `${message}`;
+  return console.error(message);
 }
 
 export function warn(message: string) {
-  console.warn(message);
+  return console.warn(message);
 }
 
 export function isNull(value: any) {
