@@ -12,7 +12,12 @@
     "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "noEmit": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+    },
   },
   "include": ["./**/*"]
 }

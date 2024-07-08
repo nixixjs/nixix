@@ -12,7 +12,7 @@ export function queueStoreEffects(obj: Store) {
     queueMicrotask(
       () => (
         ReactivityScope.runInOpen(() =>
-          obj?.[DEPS]?.forEach?.((eff) => eff?.())
+          obj[DEPS]?.forEach?.((eff) => eff?.())
         ),
         STORE_EFFECT_SET.delete(obj)
       )

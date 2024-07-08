@@ -59,7 +59,7 @@ function callStore<S extends NonPrimitive>(
   }
 ): any[] {
   let value = cloneObject(
-    isFunction(initialValue) ? (initialValue as Function)() : initialValue
+    isFunction(initialValue) ? initialValue() : initialValue
   );
   const initValue = new Store({ value });
   const setter = (newValue: (prev?: any) => any) => {

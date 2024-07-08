@@ -40,7 +40,7 @@ function NixixHMR({projectRoot, dev} = { dev: false }) {
             $nixixStore.reactiveScope = true;
           })
         };
-        import { agnosticRouteObjects as $agnosticRouteObjects } from "${dev ? 'router/utils' : 'nixix/router/utils'}";
+        import { agnosticRouteObjects as $agnosticRouteObjects } from "${dev ? '~/router/utils' : 'nixix/router/utils'}";
         `;
         return {
           code: `${prelude}${code}`,
@@ -76,7 +76,7 @@ function NixixEsbuildConfig({dev} = { dev: false }) {
     ...baseEsbuildOptions,
     ...(dev ? {
       jsxImportSource: "./index.js",
-      jsxInject: 'import $Nixix, { nixixStore as $nixixStore } from "dom"',
+      jsxInject: 'import $Nixix, { nixixStore as $nixixStore } from "~/dom"',
     } : {
       jsxImportSource: "nixix",
       jsxInject: "import $Nixix, { nixixStore as $nixixStore } from 'nixix/dom';",
