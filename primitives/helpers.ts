@@ -4,6 +4,9 @@ import { nixixStore } from "../dom/index";
 import { Signal, Store } from "./classes";
 import { Primitive, type NonPrimitive } from "./types";
 
+/**
+ * @dev works like a pick function, but removes the prop from the target and puts it in the new object
+ */
 export function splitProps<T extends EmptyObject<any>>(obj: T, ...props: (keyof T)[]) {
   const splittedProps: Record<any, any> = {};
   forEach(props, (p) => {
@@ -31,6 +34,9 @@ export function isNull(val: any) {
   return val === null || val === undefined;
 }
 
+/**
+ * @dev checks the type of value if it is boolean, number or string;
+ */
 export function checkType(value: string | number | boolean) {
   const types = {
     boolean: Boolean,
@@ -55,7 +61,7 @@ export function isReactive(value: any) {
 
 export class ReactivityScope {
   /**
-   * Runs a specified function when the reactive scope is closed, i.e nixixStore.reactiveScope is false.
+   * @dev Calls a callback when the reactive scope is closed, i.e nixixStore.reactiveScope is false.
    * This is done so as to not create and return signals on store access by the diffing algorithm used by the `patchObj` function.
    */
   static runInClosed(fn: () => void) {
@@ -66,7 +72,7 @@ export class ReactivityScope {
   }
   
   /**
-   * Runs a specified function when the reactive scope is open, i.e nixixStore.reactiveScope is true.
+   * Calls a callback function when the reactive scope is open, i.e nixixStore.reactiveScope is true.
    * This is done so as to create and return signals or retrieve signals when stores are accessed. Should be used by state setter functions.
    */
   static runInOpen(fn: () => void) {
