@@ -93,13 +93,13 @@ Now you are ready to code 😁!!!!
   };
   ```
 
-- callRef : This function is used to get the a dom element instance, to do some regular dom operations on them.
+- ref : This function is used to get the a dom element instance, to do some regular dom operations on them.
 
   ```jsx
-    import { callRef, effect, signal } from 'nixix/primitives';
+    import { ref, effect, signal } from 'nixix/primitives';
 
     const App = () => {
-      const myDiv = callRef<HTMLDivElement>()
+      const myDiv = ref<HTMLDivElement>()
       const [display, setDisplay] = signal(true);
       effect(() => {
           if (!display) {

@@ -11,7 +11,7 @@ import type {
   Signal as Signal2,
 } from "./types";
 
-function callRef<R extends Element | HTMLElement>(ref: R): MutableRefObject {
+function ref<R extends Element | HTMLElement>(ref: R): MutableRefObject {
   return {
     current: {} as Current,
     nextElementSibling: ref,
@@ -20,7 +20,7 @@ function callRef<R extends Element | HTMLElement>(ref: R): MutableRefObject {
   };
 }
 
-function callSignal<S>(
+function signal<S>(
   initialValue: S,
   config?: {
     equals: boolean;
@@ -47,7 +47,7 @@ function callSignal<S>(
   return [initValue as any, setter];
 }
 
-function callStore<S extends NonPrimitive>(
+function store<S extends NonPrimitive>(
   initialValue: S,
   config?: {
     equals: boolean;
@@ -80,7 +80,7 @@ function getValueType<T>(value: any) {
 function memo<T>(fn: () => T, deps: any[]) {
   const value = fn();
   const [state, setState] = getValueType<T>(value)!;
-  callReaction(() => {
+  reaction(() => {
     setState(fn());
   }, deps);
   return state;
@@ -126,7 +126,7 @@ function resolveImmediate(fn: CallableFunction) {
   queueMicrotask(fn as () => void);
 }
 
-function callEffect(callbackFn: CallableFunction) {
+function effect(callbackFn: CallableFunction) {
   resolveImmediate(() => {
     try {
       EFFECT_STACK.push(callbackFn);
@@ -137,7 +137,7 @@ function callEffect(callbackFn: CallableFunction) {
   });
 }
 
-function callReaction(callbackFn: CallableFunction, deps?: (Signal | Store)[]) {
+function reaction(callbackFn: CallableFunction, deps?: (Signal | Store)[]) {
   subscribeDeps(callbackFn, deps);
 }
 
@@ -150,28 +150,15 @@ function renderEffect(callbackFn: CallableFunction) {
   }
 }
 
-// This is only for simplicity
-const signal = callSignal;
-
-const store = callStore;
-
-const effect = callEffect;
-
-const reaction = callReaction;
-
 export {
   Signal,
   Store,
-  callEffect,
-  callReaction,
-  callRef,
-  callSignal,
-  callStore,
   concat,
   effect,
   getSignalValue,
   getValueType,
   memo,
+  ref,
   reaction,
   renderEffect,
   signal,

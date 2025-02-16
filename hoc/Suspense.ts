@@ -1,6 +1,6 @@
 import { createFragment } from "../dom/helpers";
 import { LiveFragment } from "../live-fragment";
-import { callStore, callReaction } from "../primitives";
+import { store, reaction } from "../primitives";
 import { compFallback, createBoundary } from "./helpers";
 import { raise } from "../shared";
 
@@ -10,7 +10,7 @@ export function Suspense(props: SuspenseProps) {
     raise(`The Suspense component must have children that return a promise.`);
   }
   fallback = fallback || (compFallback() as any);
-  const [loading, setLoading] = callStore(
+  const [loading, setLoading] = store(
     {
       rejected: true,
     },
@@ -22,7 +22,7 @@ export function Suspense(props: SuspenseProps) {
     commentBoundary.firstChild!,
     commentBoundary.lastChild!
   );
-  callReaction(
+  reaction(
     function SuspenseEff() {
       liveFragment.replace(createFragment(resolvedJSX as any) as any);
     },

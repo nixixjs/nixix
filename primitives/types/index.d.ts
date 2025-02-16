@@ -1,18 +1,21 @@
 import { EmptyObject } from "../../types/index";
 
 // primitive
-export type SetSignalDispatcher<S> = (newValue: S | ((prev: S) => S)) => void
-;
+export type SetSignalDispatcher<S> = (newValue: S | ((prev: S) => S)) => void;
 export type SetStoreDispatcher<S> = (newValue: S | ((prev: S) => S)) => void;
 
-export type Signal<S> = S extends null | undefined ? {
-  value: S
-} : {
-  value: S
-} & S;
+export type Signal<S> = S extends null | undefined
+  ? {
+      value: S;
+    }
+  : {
+      value: S;
+    } & S;
 
 export type Store<O> = {
-  [index in keyof O]: O[index] extends NonPrimitive
+  [index in keyof O]: O[index] extends ((...args: any) => any) 
+    ? O[index]
+    : O[index] extends NonPrimitive
     ? Store<O[index]>
     : Signal<O[index]>;
 };
@@ -42,7 +45,7 @@ type NonPrimitive = EmptyObject | Array<any>;
  * @param initialValue initial value to be tracked: can be an object or an array.
  * @param config this object is optional, it requires an equals property of type 'boolean'. If equals is 'true', it will skip comparing the two objects for sameness else it will check for sameness before updating the signal
  */
-export function callSignal<S extends Primitive>(
+export function signal<S extends Primitive>(
   initialValue: S,
   config?: {
     equals: boolean;
@@ -55,20 +58,19 @@ export function callSignal<S extends Primitive>(
  * @param initialValue initial value to be tracked: can be an object or an array.
  * @param config this object is optional, it requires an equals property of type 'boolean'. If equals is 'true', it will skip comparing the two objects for sameness else it will check for sameness before updating the store
  */
-export function callStore<O extends NonPrimitive>(
+export function store<O extends NonPrimitive>(
   initialValue: O,
   config?: {
     equals: boolean;
   }
 ): [Store<O>, SetStoreDispatcher<O>];
 
-export const signal: typeof callSignal;
-
-export const store: typeof callStore;
-
-export function splitProps<T extends EmptyObject<any>, K extends keyof T>(obj: T, ...props: K[]): {
-  [index in K]: T[K]
-}
+export function splitProps<T extends EmptyObject<any>, K extends keyof T>(
+  obj: T,
+  ...props: K[]
+): {
+  [index in K]: T[K];
+};
 
 export function getValueType<T>(value: T): T[];
 
@@ -88,7 +90,7 @@ interface EffectCallback<R = void> {
  *
  * @param fn callback function to return the initialValue
  * @param deps array of signals or stores to which when changed re-runs and updates the memo's value;
- * 
+ *
  */
 export function memo<S extends Primitive>(
   fn: () => S,
@@ -101,7 +103,7 @@ export function memo<S extends NonPrimitive>(
 
 /**
  * Creates a memoized concatenated string from a template string literal containing a signal(s);
- * 
+ *
  * @example
  * ```jsx
  * import { concat, signal } from 'nixix/primitives';
@@ -109,47 +111,41 @@ export function memo<S extends NonPrimitive>(
  * const View = () => <div className={concat`${display} flex-col`} >I am a DIV</div>
  * ```
  */
-export function concat<T extends Primitive>(...templ: Array<T | Signal<T> | TemplateStringsArray>): MemoSignal<string>;
+export function concat<T extends Primitive>(
+  ...templ: Array<T | Signal<T> | TemplateStringsArray>
+): MemoSignal<string>;
 
 /**
  * Places the callback function to be passed to it in aa stack, so signal values acessed within the callback can subscribe the callback to themselves.
- * 
- * @example 
+ *
+ * @example
  * ```jsx
  * import { effect, signal } from 'nixix/primitves';
- * 
+ *
  * const [count, setCount] = signal(0);
  * effect(() => {
  *  console.log(count.value)
  * })
  * ```
  */
-export function effect(
-  fn: EffectCallback,
-): void;
-
-export const callEffect: typeof effect
+export function effect(fn: EffectCallback): void;
 
 /**
  * Takes a callback function and a dependency array. Containing signals or stores to subscribe to. The callback will be called only when te signal changes;
- * 
- * @example 
+ *
+ * @example
  * ```jsx
- * import { callReaction, signal } from 'nixix/primitives';
- * 
+ * import { reaction, signal } from 'nixix/primitives';
+ *
  * const [count, setCount] = signal(0);
- * callReaction(() => {
+ * reaction(() => {
  *  console.log(count.value)
  * }, [count])
  * ```
  */
-export function callReaction(fn: EffectCallback, deps: Deps): void;
+export function reaction(fn: EffectCallback, deps: Deps): void;
 
-export const reaction: typeof callReaction
-
-export function renderEffect(
-  fn: EffectCallback,
-): void;
+export function renderEffect(fn: EffectCallback): void;
 
 /**
  * @deprecated PLEASE DO NOT USE THIS FUNCTION;
@@ -165,10 +161,10 @@ export function removeEffect(fn: EffectCallback, signal: Deps[number]): void;
  * @example
  * ```jsx
  * This function is used to get a reference to a dom element. To get the element you want to manipulate, add the 'bind:ref' prop with it's value as the ref variable. 
- * import { callRef } from 'nixix';
+ * import { ref } from 'nixix';
  * 
  * function App() {
-    const div = callRef()
+    const div = ref()
     return (
       <div bind:ref={div} >I'm a div</div>
     )
@@ -176,7 +172,7 @@ export function removeEffect(fn: EffectCallback, signal: Deps[number]): void;
  * 
  * ```
  */
-export function callRef<
+export function ref<
   R extends Element | null =
     | any
     | HTMLElementTagNameMap[keyof HTMLElementTagNameMap]
