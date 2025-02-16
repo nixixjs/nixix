@@ -1,5 +1,5 @@
 import { getSignalValue } from "../dom/helpers";
-import { DEPS, forEach, isFunction, raise } from "../shared";
+import { SYMBOL_DEPS, forEach, isFunction, raise } from "../shared";
 import { Signal, Store } from "./classes";
 import { ReactivityScope, deepCopy, isPrimitive, splitProps } from "./helpers";
 import { patchObj } from "./patchObj";
@@ -98,7 +98,7 @@ function concat<T extends Signal>(
       const expression = expressions[i - 1];
       let returnedVal: Primitive = "";
       if (expression) {
-        if (expression[DEPS]) returnedVal = getSignalValue(expression);
+        if (expression[SYMBOL_DEPS]) returnedVal = getSignalValue(expression);
         else if (isPrimitive(expression)) returnedVal = expression as any;
       }
       return p + returnedVal + v;
@@ -113,13 +113,13 @@ function subscribeDeps(
   if (furtherDependents)
     resolveImmediate(() => {
       forEach(furtherDependents, (dep) => {
-        dep?.[DEPS] && addDep(callbackFn, dep as Signal);
+        dep?.[SYMBOL_DEPS] && addDep(callbackFn, dep as Signal);
       });
     });
 }
 
 function addDep(cb: CallableFunction, dep: Signal | Store) {
-  dep?.[DEPS]?.add(cb);
+  dep?.[SYMBOL_DEPS]?.add(cb);
 }
 
 function resolveImmediate(fn: CallableFunction) {

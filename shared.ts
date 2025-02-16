@@ -1,12 +1,12 @@
-export const REACTIVE = Symbol.for('reactive')
+export const SYMBOL_REACTIVE = Symbol.for("reactive");
 
-export const DEPS = Symbol.for('deps')
+export const SYMBOL_DEPS = Symbol.for("deps");
 
-export const SIGNALMAP = Symbol.for('signalMap')
+export const SYMBOL_SIGNALMAP = Symbol.for("signalMap");
 
-export const DELETEDPROPMAP = Symbol.for('deletedPropMap');
+export const SYMBOL_DELETEDPROPMAP = Symbol.for("deletedPropMap");
 
-export const TOPRIMITIVE = Symbol.toPrimitive;
+export const SYMBOL_TOPRIMITIVE = Symbol.toPrimitive;
 
 /**
  * @dev wrapper for console.error

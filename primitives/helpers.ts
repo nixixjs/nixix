@@ -1,13 +1,16 @@
-import { REACTIVE, forEach } from "../shared";
+import { SYMBOL_REACTIVE, forEach } from "../shared";
 import { type EmptyObject } from "../dom";
 import { nixixStore } from "../dom/index";
 import { Signal, Store } from "./classes";
 import { Primitive, type NonPrimitive } from "./types";
 
 /**
- * @dev works like a pick function, but removes the prop from the target and puts it in the new object
+ * @dev splitProps works like a pick function, but removes the prop from the target and puts it in the new object
  */
-export function splitProps<T extends EmptyObject<any>>(obj: T, ...props: (keyof T)[]) {
+export function splitProps<T extends EmptyObject<any>>(
+  obj: T,
+  ...props: (keyof T)[]
+) {
   const splittedProps: Record<any, any> = {};
   forEach(props, (p) => {
     if (p in obj) {
@@ -34,8 +37,8 @@ export function deepCopy<T extends DeepCopyable>(value: T): T {
   }
 
   // Handle functions
-  if (typeof value === 'function') {
-    return function(this: any, ...args: any[]) {
+  if (typeof value === "function") {
+    return function (this: any, ...args: any[]) {
       return value.apply(this, args);
     } as T;
   }
@@ -70,13 +73,13 @@ export function deepCopy<T extends DeepCopyable>(value: T): T {
   }
 
   // Handle Objects
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     const result: Record<string, any> = {};
-    
+
     Object.entries(value).forEach(([key, val]) => {
       result[key] = deepCopy(val);
     });
-    
+
     return result as T;
   }
 
@@ -106,7 +109,9 @@ export function checkType(value: string | number | boolean) {
   return type;
 }
 
-export function isPrimitive(value: Primitive | NonPrimitive): value is Primitive {
+export function isPrimitive(
+  value: Primitive | NonPrimitive
+): value is Primitive {
   return (
     ["string", "boolean", "number", "bigint"].includes(typeof value) ||
     isNull(value)
@@ -114,7 +119,7 @@ export function isPrimitive(value: Primitive | NonPrimitive): value is Primitive
 }
 
 export function isReactive(value: any) {
-  return (value as Signal | Store)?.[REACTIVE] as boolean;
+  return (value as Signal | Store)?.[SYMBOL_REACTIVE] as boolean;
 }
 
 export class ReactivityScope {
@@ -128,7 +133,7 @@ export class ReactivityScope {
     nixixStore.reactiveScope = true;
     return true;
   }
-  
+
   /**
    * Calls a callback function when the reactive scope is open, i.e nixixStore.reactiveScope is true.
    * This is done so as to create and return signals or retrieve signals when stores are accessed. Should be used by state setter functions.
