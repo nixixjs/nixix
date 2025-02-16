@@ -1,5 +1,5 @@
-import { getSignalValue } from "../dom/helpers";
-import { SYMBOL_DEPS, forEach, isFunction, raise } from "../shared";
+import { getSignalValue, onlyChild } from "../dom/helpers";
+import { SYMBOL_DEPS, flatten, forEach, isFunction, raise } from "../shared";
 import { Signal, Store } from "./classes";
 import { ReactivityScope, deepCopy, isPrimitive, splitProps } from "./helpers";
 import { patchObj } from "./patchObj";
@@ -8,7 +8,8 @@ import type {
   NonPrimitive,
   Primitive,
   SetSignalDispatcher,
-  Signal as Signal2,
+  Signal as TSignal,
+  Store as TStore
 } from "./types";
 
 function ref<R extends Element | HTMLElement>(ref: R): MutableRefObject {
@@ -25,7 +26,7 @@ function signal<S>(
   config?: {
     equals: boolean;
   }
-): [Signal2<S>, SetSignalDispatcher<S>] {
+): [TSignal<S>, SetSignalDispatcher<S>] {
   let value: string | number | boolean = isFunction(initialValue)
     ? (initialValue as Function)()
     : initialValue;
@@ -150,6 +151,28 @@ function renderEffect(callbackFn: CallableFunction) {
   }
 }
 
+type ContextProviderProps<T> = {
+  children: () => Nixix.NixixNode;
+  value: T;
+};
+
+function createContext<T extends TStore<NonPrimitive>>() {
+  const contextCountMap = new Map<number, T>();
+  let count = 0;
+  return {
+    context: () => contextCountMap.get(count) || ({} as T),
+    Provider: (props: ContextProviderProps<T>) => {
+      const validatedChildren = onlyChild(
+        flatten(props.children as any)
+      )
+      console.log(validatedChildren)
+      count += 1;
+      contextCountMap.set(count, props.value);
+      return validatedChildren();
+    },
+  };
+}
+
 export {
   Signal,
   Store,
@@ -164,4 +187,5 @@ export {
   signal,
   splitProps,
   store,
+  createContext
 };

@@ -192,7 +192,11 @@ function buildComponent(
   let returnedElement: any = "";
   if (isFunction(tagNameFC)) {
     const artificialProps = props || {};
-    Boolean(children?.length) && (artificialProps.children = children);
+    Boolean(children?.length) && (
+      children.length === 1
+      ? artificialProps.children = children[0]
+      : artificialProps.children = children
+    );
     if (tagNameFC.prototype instanceof Component) {
       const componentObject = new (tagNameFC as any)(
         artificialProps
