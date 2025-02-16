@@ -1,7 +1,7 @@
 export type NodeCleanupMap = WeakMap<Node, () => void>;
 
-export default class NixixDOMCleaner {
-  private static instance: NixixDOMCleaner;
+export default class DOMCleaner {
+  private static instance: DOMCleaner;
   private observer: MutationObserver;
   private cleanupMap: NodeCleanupMap;
 
@@ -10,11 +10,11 @@ export default class NixixDOMCleaner {
     this.observer = new MutationObserver(this.handleMutations.bind(this));
   }
 
-  public static getInstance(): NixixDOMCleaner {
-    if (!NixixDOMCleaner.instance) {
-      NixixDOMCleaner.instance = new NixixDOMCleaner();
+  public static getInstance(): DOMCleaner {
+    if (!DOMCleaner.instance) {
+      DOMCleaner.instance = new DOMCleaner();
     }
-    return NixixDOMCleaner.instance;
+    return DOMCleaner.instance;
   }
 
   private handleMutations(mutations: MutationRecord[]): void {
@@ -27,10 +27,7 @@ export default class NixixDOMCleaner {
 
   private processRemovedNodes(nodes: NodeList): void {
     nodes.forEach(node => {
-      // Handle the current node
       this.cleanupNode(node);
-
-      // Recursively handle all child nodes if this is an element
       if (node instanceof Element) {
         this.processChildNodes(node);
       }
@@ -38,7 +35,6 @@ export default class NixixDOMCleaner {
   }
 
   private processChildNodes(element: Element): void {
-    // Use querySelectorAll to get ALL descendant elements
     const children = element.querySelectorAll('*');
     children.forEach(child => {
       this.cleanupNode(child);
@@ -68,23 +64,7 @@ export default class NixixDOMCleaner {
     this.observer.disconnect();
   }
 
-  // Optional: method to clear all cleanups
   public clearAllCleanups(): void {
     this.cleanupMap = new WeakMap();
   }
 }
-
-// Export a single instance
-export const domCleaner = NixixDOMCleaner.getInstance();
-
-// Example usage in NixixJS
-// Now anywhere in your code, you can use it like this:
-function registerNodeWithNixix(node: Node, someReference: any) {
-  domCleaner.registerCleanup(node, () => {
-    console.log('Cleaning up node:', node);
-    someReference = null;
-  });
-}
-
-// Start observing
-domCleaner.observe(document.body);
