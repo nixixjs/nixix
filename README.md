@@ -11,19 +11,20 @@
 
 ### To get started, you have to initialize your project with npm, that is, if you haven't already. Type this in the terminal:
 ```bash 
+  mkdir my-app
+  cd my-app
   npm init -y 
 ```
 
-### Then, configure your workspace. To do that, type:
+### Clone the typescript setup repo, type:
 ``` bash
-  npm install create-nixix-app
-  npx create-nixix-app
+  git clone https://github.com/nixixjs/ts-setup .
 ```
 
 
-### The final step is to download the library, type:
+### Download the library to complete setup, type:
 ``` bash
-  npm install nixix
+  npm install
 ```
 Now you are ready to code 😁!!!! 
 
