@@ -1,4 +1,4 @@
-import { DEPS } from "../shared";
+import { SYMBOL_DEPS } from "../shared";
 import { type Store } from "./Store";
 import { ReactivityScope } from "./helpers";
 import { NonPrimitive } from "./types";
@@ -12,7 +12,7 @@ export function queueStoreEffects(obj: Store) {
     queueMicrotask(
       () => (
         ReactivityScope.runInOpen(() =>
-          obj[DEPS]?.forEach?.((eff) => eff?.())
+          obj[SYMBOL_DEPS]?.forEach?.((eff) => eff?.())
         ),
         STORE_EFFECT_SET.delete(obj)
       )

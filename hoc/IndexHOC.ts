@@ -1,6 +1,6 @@
 import { createFragment } from "../dom/helpers";
 import { LiveFragment } from "../live-fragment";
-import { callReaction } from "../primitives";
+import { reaction } from "../primitives";
 import {
   arrayOfJSX,
   compFallback,
@@ -23,7 +23,7 @@ export function Index(props: ForProps) {
   );
   const removedNodes: any[] = [];
 
-  callReaction(
+  reaction(
     function IndexEff() {
       const eachLen = each.length;
       if (eachLen === 0) {
