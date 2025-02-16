@@ -1,12 +1,7 @@
 import { getSignalValue } from "../dom/helpers";
 import { DEPS, forEach, isFunction, raise } from "../shared";
 import { Signal, Store } from "./classes";
-import {
-  ReactivityScope,
-  cloneObject,
-  isPrimitive,
-  splitProps,
-} from "./helpers";
+import { ReactivityScope, deepCopy, isPrimitive, splitProps } from "./helpers";
 import { patchObj } from "./patchObj";
 import { EFFECT_STACK } from "./shared";
 import type {
@@ -58,13 +53,13 @@ function callStore<S extends NonPrimitive>(
     equals: boolean;
   }
 ): any[] {
-  let value = cloneObject(
+  let value = deepCopy(
     isFunction(initialValue) ? initialValue() : initialValue
   );
   const initValue = new Store({ value });
   const setter = (newValue: (prev?: any) => any) => {
     let newValuePassed = isFunction(newValue)
-      ? newValue(cloneObject(value))
+      ? newValue(deepCopy(value))
       : newValue;
     switch (true) {
       case config?.equals:
@@ -181,6 +176,5 @@ export {
   renderEffect,
   signal,
   splitProps,
-  store
+  store,
 };
-

@@ -22,8 +22,66 @@ export function entries(obj: object) {
   return Object.entries(obj);
 }
 
-export function cloneObject<T extends NonPrimitive>(object: T) {
-  return JSON.parse(JSON.stringify(object)) as T;
+type DeepCopyable = any;
+
+/**
+ * @dev deep copies any javascript value
+ */
+export function deepCopy<T extends DeepCopyable>(value: T): T {
+  // Handle null and undefined
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  // Handle functions
+  if (typeof value === 'function') {
+    return function(this: any, ...args: any[]) {
+      return value.apply(this, args);
+    } as T;
+  }
+
+  // Handle Dates
+  if (value instanceof Date) {
+    return new Date(value.getTime()) as T;
+  }
+
+  // Handle RegExp
+  if (value instanceof RegExp) {
+    return new RegExp(value.source, value.flags) as T;
+  }
+
+  // Handle Arrays
+  if (Array.isArray(value)) {
+    return value.map((item) => deepCopy(item)) as T;
+  }
+
+  // Handle Sets
+  if (value instanceof Set) {
+    const newSet = new Set();
+    value.forEach((item) => newSet.add(deepCopy(item)));
+    return newSet as T;
+  }
+
+  // Handle Maps
+  if (value instanceof Map) {
+    const newMap = new Map();
+    value.forEach((val, key) => newMap.set(deepCopy(key), deepCopy(val)));
+    return newMap as T;
+  }
+
+  // Handle Objects
+  if (typeof value === 'object') {
+    const result: Record<string, any> = {};
+    
+    Object.entries(value).forEach(([key, val]) => {
+      result[key] = deepCopy(val);
+    });
+    
+    return result as T;
+  }
+
+  // Handle primitives (strings, numbers, booleans)
+  return value;
 }
 
 export function removeChars(str: string | number) {
