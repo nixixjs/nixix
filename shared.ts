@@ -8,10 +8,16 @@ export const DELETEDPROPMAP = Symbol.for('deletedPropMap');
 
 export const TOPRIMITIVE = Symbol.toPrimitive;
 
+/**
+ * @dev wrapper for console.error
+ */
 export function raise(message: string) {
   return console.error(message);
 }
 
+/**
+ * @dev wrapper for console warn
+ */
 export function warn(message: string) {
   return console.warn(message);
 }
@@ -24,6 +30,9 @@ export function entries(obj: object) {
   return Object.entries(obj);
 }
 
+/**
+ * @dev doesn't allow null values, instead returns a fallback provided by caller.
+ */
 export function nonNull<V>(value: V, fallback: any) {
   return isNull(value) ? fallback : value;
 }
@@ -34,9 +43,6 @@ export function isFunction(val: any): val is CallableFunction {
 
 type ForEachParams<T> = Parameters<Array<T>["forEach"]>;
 
-/**
- * Returns void, to be used when you want to mutate some outside code in an array
- */
 export function forEach<T>(
   arr: Array<T>,
   cb: ForEachParams<T>[0],
