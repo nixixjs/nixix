@@ -147,15 +147,25 @@ export function reaction(fn: EffectCallback, deps: Deps): void;
 
 export function renderEffect(fn: EffectCallback): void;
 
-/**
- * @deprecated PLEASE DO NOT USE THIS FUNCTION;
- * SIGNALS CAN JUST REMOVE EFFECTS
- */
 export function removeSignal(
   signals: Array<Store<any> | Signal<any>> | Store<any> | Signal<any>
 ): void;
 
+/**
+ * @deprecated PLEASE DO NOT USE THIS FUNCTION;
+ * SIGNALS CAN NOW CLEAN EFFECTS
+ */
 export function removeEffect(fn: EffectCallback, signal: Deps[number]): void;
+
+export type ContextProviderProps<T> = {
+  children: () => Nixix.NixixNode;
+  value: T;
+};
+
+export function createContext<T extends Store<NonPrimitive>>(): {
+  context: () => T;
+  Provider: (props: ContextProviderProps<T>) => Nixix.NixixNode
+}
 
 /**
  * @example

@@ -187,3 +187,10 @@ export function parseRef(refObject: MutableRefObject) {
   refObject.parent = current?.parentElement;
   refObject.prevElementSibling = current?.previousElementSibling;
 }
+
+/**
+ * @dev gets the first child of a Component
+ */
+export function onlyChild(children: any) {
+  return children instanceof Array ? children[0] : children;
+}
