@@ -9,7 +9,7 @@ import type {
   Primitive,
   SetSignalDispatcher,
   Signal as TSignal,
-  Store as TStore
+  Store as TStore,
 } from "./types";
 
 function ref<R extends Element | HTMLElement>(ref: R): MutableRefObject {
@@ -162,10 +162,7 @@ function createContext<T extends TStore<NonPrimitive>>() {
   return {
     context: () => contextCountMap.get(count) || ({} as T),
     Provider: (props: ContextProviderProps<T>) => {
-      const validatedChildren = onlyChild(
-        flatten(props.children as any)
-      )
-      console.log(validatedChildren)
+      const validatedChildren = onlyChild(flatten(props.children as any));
       count += 1;
       contextCountMap.set(count, props.value);
       return validatedChildren();
@@ -177,15 +174,15 @@ export {
   Signal,
   Store,
   concat,
+  createContext,
   effect,
   getSignalValue,
   getValueType,
   memo,
-  ref,
   reaction,
+  ref,
   renderEffect,
   signal,
   splitProps,
   store,
-  createContext
 };
