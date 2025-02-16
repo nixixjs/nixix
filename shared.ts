@@ -45,6 +45,9 @@ export function forEach<T>(
   arr?.forEach?.(cb, thisArg);
 }
 
+/**
+ * @dev flattens arrays to infinity
+ */
 export function flatten(arr: Array<any>) {
   if (Array.isArray(arr)) return arr.flat(Infinity);
   else return [arr];
