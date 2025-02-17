@@ -110,7 +110,7 @@ export function removeNodes(
 export function getIncrementalNodes(
   indexArray: number[],
   each: any[],
-  callback: Required<ForProps>["children"][number]
+  callback: Required<ForProps>["children"]
 ) {
   let returnedValue = indexArray.map((index) => {
     return callback(each[index], index) as any;

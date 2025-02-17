@@ -67,7 +67,7 @@ declare global {
 
   interface ForProps {
     fallback: any;
-    children?: ((value: any, index?: number) => JSX.Element)
+    children: ((value: any, index?: number) => JSX.Element)
     each: any[]
   }
 
