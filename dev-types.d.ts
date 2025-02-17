@@ -67,13 +67,13 @@ declare global {
 
   interface ForProps {
     fallback: any;
-    children?: ((value: any, index?: number) => JSX.Element)[];
+    children?: ((value: any, index?: number) => JSX.Element)
     each: any[]
   }
 
   interface ShowProps {
     when: EffectCallback<boolean>;
-    children: any;
+    children: (bool: boolean) => JSX.Element;
     fallback: any;
     switch: Signal
   }

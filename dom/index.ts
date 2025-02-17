@@ -28,14 +28,6 @@ export const nixixStore = {
   reactiveScope: true,
 } as GlobalStore;
 
-function removeNode(node: Element | Text) {
-  const isConnected = node?.isConnected;
-  if (isConnected) node?.remove?.();
-  node?.dispatchEvent?.(new Event("remove:node"));
-  node?.childNodes?.forEach?.((child) => removeNode(child as any));
-  return isConnected;
-}
-
 function setAttribute(
   element: NixixElementType,
   attrName: string,
@@ -253,4 +245,4 @@ const Nixix = {
 const create = Nixix.create;
 
 export default Nixix;
-export { Component, bind, buildComponent, create, removeNode, render, setAttribute };
+export { Component, bind, buildComponent, create, render, setAttribute };

@@ -11,10 +11,9 @@ import {
 } from "./helpers";
 
 export function Index(props: ForProps) {
-  let { fallback, children, each } = props;
-  let [callback] = children!;
+  let { fallback, children: childrenCallback, each } = props;
   fallback = fallback || (compFallback() as any);
-  children = arrayOfJSX(each, callback);
+  let children = arrayOfJSX(each, childrenCallback);
 
   const commentBoundary = createBoundary(createFragment(children), "index");
   const liveFragment: LiveFragment = new LiveFragment(
@@ -50,7 +49,7 @@ export function Index(props: ForProps) {
             childnodesLength = liveFragment.childNodes.length; // 4
             if (childnodesLength === eachLen) return;
             const indexArray = numArray(childnodesLength, eachLen);
-            children = getIncrementalNodes(indexArray, each, callback);
+            children = getIncrementalNodes(indexArray, each, childrenCallback);
             liveFragment.append(createFragment(children));
           } else if (targetLength > eachLen) {
             // [<div class="text-blue-200" >, <div>, <div>, <div>]

@@ -56,6 +56,7 @@ declare module '../../types/index.d.ts' {
 
   /**
    * This function should be used to remove nodes, it also removes reactions and signals from the nodes, thereby helping in garbage collection of dom nodes.
+   * @deprecated PLEASE DO NOT USE THIS FUNCTION
    */
   function removeNode(node: Element | Text): boolean;
 

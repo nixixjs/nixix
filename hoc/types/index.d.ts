@@ -93,20 +93,25 @@ export declare function For<T extends any[]>(props?: ForProps<T>): someView;
  */
 export declare function Index<T extends any[]>(props?: IndexProps<T>): someView; 
 
-interface ShowProps<T> extends ComponentWithFallback {
+interface ShowProps {
   when: EffectCallback<boolean>;
   /**
    * @deprecated just access a signals value in the when callback
    */
-  switch?: T;
-  children: NixixNode;
+  switch?: any;
+  /**
+   * @deprecated the children callback can return a fallback now
+   * DO NOT USE
+   */
+  fallback?: any;
+  children: (boolean: boolean) => someView;
 }
 
-export declare function Show<T extends Signal<string | number | boolean>>(
-  props?: ShowProps<T>
+export declare function Show(
+  props?: ShowProps
 ): someView;
-export declare function Show<T extends Store<object | any[]>>(
-  props?: ShowProps<T>
+export declare function Show(
+  props?: ShowProps
 ): someView;
 
 export const lazy: AsyncComponent<Props>;
