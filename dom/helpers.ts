@@ -2,6 +2,7 @@ import { Signal, Store } from "../primitives/classes";
 import { isReactive } from "../primitives/helpers";
 import { effect } from "../primitives/index";
 import { forEach, isFunction, nonNull, raise } from "../shared";
+import DOMCleaner from "./DOMCleaner";
 import { type RefFunction } from "./types";
 
 export function checkDataType(value: any) {
@@ -57,19 +58,14 @@ export function fillInChildren(
       // signal check
       if (isReactive(child)) {
         const signal = child as Signal;
-        const text = addText(element);
+        const textNode = addText(element);
+        const domCleaner = DOMCleaner.getInstance()
         // @ts-expect-error
         function textEff() {
           const value = signal.value;
-          queueMicrotask(() => (text.textContent = nonNull(value, "")));
+          queueMicrotask(() => (textNode.textContent = nonNull(value, "")));
         }
-        text.addEventListener(
-          "remove:node",
-          () => signal.removeEffect(textEff),
-          {
-            once: true,
-          }
-        );
+        domCleaner.registerCleanup(textNode, () => signal.removeEffect(textEff));
         effect(textEff);
       } else element?.append?.(child as unknown as string);
     } else if (checkDataType(child))

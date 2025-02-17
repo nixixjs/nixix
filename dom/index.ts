@@ -3,6 +3,7 @@ import { entries, isReactive } from "../primitives/helpers";
 import { effect } from "../primitives/index";
 import { forEach, isFunction, isNull, nonNull, raise, warn } from "../shared";
 import Component, { bind } from "./Component";
+import DOMCleaner from "./DOMCleaner";
 import { addChildren, handleDirectives_, raiseIfReactive } from "./helpers";
 import { PROP_ALIASES, SVG_ELEMENTTAGS, SVG_NAMESPACE } from "./utilVars";
 
@@ -27,14 +28,6 @@ export const nixixStore = {
   reactiveScope: true,
 } as GlobalStore;
 
-function removeNode(node: Element | Text) {
-  const isConnected = node?.isConnected;
-  if (isConnected) node?.remove?.();
-  node?.dispatchEvent?.(new Event("remove:node"));
-  node?.childNodes?.forEach?.((child) => removeNode(child as any));
-  return isConnected;
-}
-
 function setAttribute(
   element: NixixElementType,
   attrName: string,
@@ -47,17 +40,12 @@ function setAttribute(
     );
   if (isReactive(attrValue)) {
     const signal = attrValue as Signal;
+    const domCleaner = DOMCleaner.getInstance()
     // @ts-expect-error
     function propEff() {
       setProp(element, attrName, type!, signal.value);
     }
-    element.addEventListener(
-      "remove:node",
-      () => signal.removeEffect(propEff),
-      {
-        once: true,
-      }
-    );
+    domCleaner.registerCleanup(element, () => signal.removeEffect(propEff));
     effect(propEff);
   } else setProp(element, attrName, type!, attrValue);
 }
@@ -78,17 +66,12 @@ function setStyle(element: NixixElementType, styleValue: StyleValueType) {
 
     if (isReactive(value)) {
       const signal = value as Signal;
+      const domCleaner = DOMCleaner.getInstance()
       // @ts-expect-error
       function styleEff() {
         element["style"][styleKey] = nonNull(signal.value, "");
       }
-      element.addEventListener(
-        "remove:node",
-        () => signal.removeEffect(styleEff),
-        {
-          once: true,
-        }
-      );
+      domCleaner.registerCleanup(element, () => signal.removeEffect(styleEff));
       effect(styleEff);
     } else element["style"][styleKey] = nonNull(value, "");
   }
@@ -230,6 +213,8 @@ function render(
   nixixStore.commentForLF = config.commentForLF;
   addChildren((bool ? fn() : fn) as any, root);
   nixixStore["root"] = root;
+  const domCleaner = DOMCleaner.getInstance()
+  domCleaner.observe(root)
 }
 
 const Nixix = {
@@ -260,4 +245,4 @@ const Nixix = {
 const create = Nixix.create;
 
 export default Nixix;
-export { Component, bind, buildComponent, create, removeNode, render, setAttribute };
+export { Component, bind, buildComponent, create, render, setAttribute };
