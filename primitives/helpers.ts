@@ -130,6 +130,7 @@ export class ReactivityScope {
   static runInClosed(fn: () => void) {
     nixixStore.reactiveScope = false;
     fn();
+    // Don't reset to previous state, but ensure it's open after execution
     nixixStore.reactiveScope = true;
     return true;
   }
@@ -141,7 +142,7 @@ export class ReactivityScope {
   static runInOpen(fn: () => void) {
     nixixStore.reactiveScope = true;
     fn();
-    nixixStore.reactiveScope = false;
-    return false;
+    // Keep the scope open after execution
+    return true;
   }
 }

@@ -213,6 +213,7 @@ function render(
   nixixStore.commentForLF = config.commentForLF;
   addChildren((bool ? fn() : fn) as any, root);
   nixixStore["root"] = root;
+  nixixStore['reactiveScope'] = true;
   const domCleaner = DOMCleaner.getInstance()
   domCleaner.observe(root)
 }
