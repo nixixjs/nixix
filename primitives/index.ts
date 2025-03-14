@@ -54,14 +54,14 @@ function store<S extends NonPrimitive>(
     equals: boolean;
   }
 ): any[] {
-  let value = deepCopy(
+  let value = 
     isFunction(initialValue) ? initialValue() : initialValue
-  );
-  const initValue = new Store({ value });
+  const initValue = new Store({ value: deepCopy(value) });
   const setter = (newValue: (prev?: any) => any) => {
     let newValuePassed = isFunction(newValue)
-      ? newValue(deepCopy(value))
+      ? newValue(value)
       : newValue;
+    value = newValuePassed;
     switch (true) {
       case config?.equals:
       default:
